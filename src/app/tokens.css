@@ -1,0 +1,31 @@
+/* Figma 변수 (🧩 Components). 폰트 변수(--font-kr, --font-num)는 layout.tsx의 next/font 설정에서 주입됩니다. */
+:root {
+  --bg: #000000;
+  --svc-bg: #12151b;
+  --svc-side: #0b0d11;
+  --top-user: rgba(18, 21, 27, 0.96);
+  --input-bg: #0a0c10;
+
+  --text: #ffffff;
+  --muted: rgba(255, 255, 255, 0.72);
+  --dim: rgba(255, 255, 255, 0.55);
+
+  --blue: #1a44ff;
+  --neon: #00aeff;
+  --danger: #ff6b6b;
+
+  --line: rgba(255, 255, 255, 0.16);
+  --line-strong: rgba(255, 255, 255, 0.32);
+  --white-08: rgba(255, 255, 255, 0.08);
+  --white-10: rgba(255, 255, 255, 0.1);
+  --white-15: rgba(255, 255, 255, 0.15);
+  --white-22: rgba(255, 255, 255, 0.22);
+  --white-30: rgba(255, 255, 255, 0.3);
+  --white-40: rgba(255, 255, 255, 0.4);
+  --white-50: rgba(255, 255, 255, 0.5);
+
+  --sidebar-w: 232px;
+  --topbar-h: 64px;
+  /* 페이지 좌우 여백: 데스크톱 48px → 모바일 20px */
+  --page-px: clamp(20px, 4vw, 48px);
+}
