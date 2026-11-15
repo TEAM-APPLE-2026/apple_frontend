@@ -1,0 +1,13 @@
+/* F-05 · F-06 form */
+.form { display: flex; flex-direction: column; gap: 20px; margin-top: 32px; }
+.row { display: flex; gap: 20px; }
+.row > * { flex: 1; }
+@media (max-width: 599px) { .row { flex-direction: column; } }
+.err { font-size: 13px; font-weight: 700; letter-spacing: -0.01em; color: var(--danger); }
+.actions { margin-top: 0; }
+
+/* F-07 제출 전 확인 */
+.preview { margin-top: 32px; padding: 24px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px; }
+.previewTitle { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+.previewDl { margin-top: 16px; border-top: 1px solid var(--line); }
+.dd { line-height: 1.6; }

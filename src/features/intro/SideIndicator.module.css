@@ -1,0 +1,10 @@
+/* Figma side-indicator: x1368 (오른쪽 48px), 화면 세로 가운데 */
+.indicator {
+  position: fixed; right: 48px; top: 50%; z-index: 20; transform: translateY(-50%);
+  display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+  pointer-events: none;
+}
+.now { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: var(--text); }
+.total { font-size: 12px; letter-spacing: -0.01em; color: var(--dim); }
+@media (max-width: 1439px) { .indicator { right: 16px; } }
+@media (max-width: 1023px) { .indicator { display: none; } }

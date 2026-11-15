@@ -1,0 +1,12 @@
+.field { display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 0; }
+.label { font-size: 13px; font-weight: 700; letter-spacing: -0.01em; color: var(--text); }
+.box {
+  width: 100%; min-height: 48px; padding: 0 16px;
+  background: var(--input-bg); border: 1px solid var(--white-30); border-radius: 8px;
+  color: var(--text); font: inherit; font-size: 16px; letter-spacing: -0.01em;
+  outline: none; transition: border-color .15s ease;
+}
+.area { display: block; min-height: 120px; padding: 16px; line-height: 1.7; resize: vertical; }
+.box::placeholder { color: var(--dim); }
+.box:focus { border-color: var(--white-50); }
+.error, .error:focus { border-color: var(--danger); }

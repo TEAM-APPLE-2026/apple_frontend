@@ -1,0 +1,77 @@
+/* Figma page: pt40 pb96 px48 — 목록 1080px, 상세 · 작성 880px */
+.page { width: 100%; padding: 40px var(--page-px) 96px; }
+.wide { max-width: 1080px; }
+.narrow { max-width: 880px; }
+@media (max-width: 599px) { .page { padding-top: 28px; padding-bottom: 64px; } }
+
+.title { font-size: clamp(28px, 2.5vw + 16px, 36px); font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; }
+.sub { margin-top: 10px; font-size: 15px; line-height: 1.6; letter-spacing: -0.01em; color: var(--muted); }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.barLabel { font-size: 13px; letter-spacing: -0.01em; color: var(--muted); }
+.bar + .title { margin-top: 32px; }
+
+.statusOk { display: flex; align-items: center; gap: 6px; margin-top: 16px; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; color: var(--neon); }
+
+/* filters: label + select */
+.filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; margin-top: 24px; }
+.filter { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; color: var(--muted); }
+.select {
+  appearance: none; min-width: 150px; height: 42px; padding: 0 36px 0 12px;
+  background: var(--input-bg) url(/icons/chevron-down.svg) no-repeat right 13px center / 14px 14px;
+  border: 1px solid var(--surface-line); border-radius: 8px;
+  color: var(--text); font: inherit; font-size: 14px; font-weight: 400; letter-spacing: -0.01em; cursor: pointer;
+}
+.select:focus-visible { outline: 2px solid var(--neon); outline-offset: 2px; }
+.select option { background: var(--surface); }
+
+/* surface 표 (tbl-wrap) */
+.tblWrap { margin-top: 24px; padding: 4px 20px; background: var(--surface); border: 1px solid var(--surface-line); border-radius: 10px; overflow-x: auto; }
+.tbl { width: 100%; min-width: 860px; border-collapse: collapse; font-size: 14px; letter-spacing: -0.01em; text-align: left; }
+.tbl th, .tbl td { padding: 14px 16px 14px 0; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.tbl th:last-child, .tbl td:last-child { padding-right: 0; }
+.tbl tbody tr:last-child td, .tbl tbody tr:last-child th { border-bottom: 0; }
+.tbl thead th { font-size: 12px; font-weight: 700; color: var(--dim); white-space: nowrap; }
+.tbl .right { text-align: right; }
+.groupName { font-weight: 700; }
+.groupName a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.share { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.shareBar { position: relative; width: 48px; height: 6px; border-radius: 3px; background: var(--white-12); overflow: hidden; }
+.shareFill { position: absolute; inset: 0 auto 0 0; background: var(--blue); }
+.action { text-align: right; white-space: nowrap; }
+
+.note { margin-top: 12px; font-size: 14px; line-height: 1.6; letter-spacing: -0.01em; color: var(--dim); }
+.demoBtn { margin-left: 6px; color: var(--neon); font-size: 13px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.lockNote {
+  display: flex; align-items: flex-start; gap: 10px; margin-top: 20px; padding-top: 16px;
+  border-top: 1px solid var(--line); font-size: 13px; line-height: 1.6; letter-spacing: -0.01em; color: var(--muted);
+}
+.lockNote img { margin-top: 2px; }
+
+/* dl (그룹 보기 · 제출 전 확인) */
+.dl { margin: 0; }
+.dlBox { margin-top: 32px; padding: 4px 20px; background: var(--surface); border: 1px solid var(--surface-line); border-radius: 10px; }
+.dlRow { display: flex; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.dlRow:last-child { border-bottom: 0; }
+.dt { width: 150px; flex-shrink: 0; font-size: 14px; letter-spacing: -0.01em; color: var(--muted); }
+.dd { flex: 1; min-width: 0; margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+.dd small { font-size: 12px; font-weight: 500; color: var(--dim); }
+@media (max-width: 599px) {
+  .dlRow { flex-direction: column; gap: 4px; }
+  .dt { width: auto; }
+}
+
+.actions {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+  margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line);
+}
+.actionsEnd { justify-content: flex-end; }
+
+/* 빈 상태 · 준비 중 */
+.emptyBox {
+  display: flex; flex-direction: column; align-items: center; margin-top: 32px; padding: 56px 24px;
+  background: var(--surface); border: 1px solid var(--surface-line); border-radius: 10px; text-align: center;
+}
+.emptyTitle { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+.emptyDesc { margin-top: 8px; font-size: 15px; letter-spacing: -0.01em; color: var(--muted); }
+.emptyBox > a { margin-top: 28px; }
+.soon { font-size: 15px; letter-spacing: -0.01em; color: var(--muted); }

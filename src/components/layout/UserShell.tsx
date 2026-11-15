@@ -10,7 +10,7 @@ import { currentUser, myGroups } from '@/lib/mock'
 import s from './UserShell.module.css'
 
 const NAV: { to: string; label: string; icon: IconName; end?: boolean }[] = [
-  { to: '/', label: '홈', icon: 'nav-home', end: true },
+  { to: '/home', label: '홈', icon: 'nav-home', end: true },
   { to: '/report', label: '피해 등록', icon: 'nav-edit' },
   { to: '/cases', label: '사건 둘러보기', icon: 'nav-search' },
   { to: '/groups', label: '내 그룹', icon: 'nav-users' },
@@ -47,7 +47,7 @@ export default function UserShell({ children }: { children: ReactNode }) {
     <div className={`${s.shell} ${open ? s.open : ''}`}>
       <aside className={s.sidebar} id="sidebar" aria-label="메뉴" onClick={(e) => (e.target as HTMLElement).closest('a') && close()}>
         <div className={s.sideTop}>
-          <Logo />
+          <Logo href="/home" />
           <button className={s.close} onClick={() => setOpen(false)} aria-label="메뉴 닫기">
             <Icon name="x" size={24} />
           </button>

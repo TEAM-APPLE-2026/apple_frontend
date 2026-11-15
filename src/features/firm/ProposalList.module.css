@@ -1,0 +1,11 @@
+.demo { margin-right: 12px; font-size: 12px; font-weight: 700; color: var(--dim); text-decoration: underline; text-underline-offset: 3px; }
+.demo:hover { color: var(--neon); }
+
+/* F-11 선정 결과 */
+.result {
+  display: flex; flex-direction: column; gap: 4px; margin-top: 24px; padding: 24px;
+  background: var(--surface); border: 2px solid var(--neon); border-radius: 10px;
+}
+.resultLabel { font-size: 13px; font-weight: 700; letter-spacing: -0.01em; color: var(--neon); }
+.resultTitle { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+.resultDesc { margin-top: 2px; font-size: 14px; line-height: 1.6; letter-spacing: -0.01em; color: var(--muted); }

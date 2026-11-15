@@ -6,6 +6,13 @@ export type IconName =
   | 'nav-home' | 'nav-edit' | 'nav-search' | 'nav-users' | 'searchbox-search'
   | 'btn-arrow' | 'btn-arrow-dark' | 'btn-check' | 'btn-check-dark'
   | 'back-arrow' | 'back-arrow-strong' | 'checkbox-check'
+  // 소개 · 로그인 화면 (Figma 01 소개 · 로그인)
+  | 'role-arrow' | 'card-arrow' | 'more-arrow' | 'faq-x' | 'menu-x'
+  | 'tl-clock' | 'tl-edit' | 'tl-users'
+  // 로펌 화면 (Figma 03 로펌) — 사이드바는 비활성/활성(-on) 원본이 따로 있음
+  | 'firm-scale' | 'status-check' | 'lock-note'
+  | 'fnav-search' | 'fnav-search-on' | 'fnav-file' | 'fnav-file-on'
+  | 'fnav-scale' | 'fnav-scale-on' | 'fnav-building' | 'fnav-building-on'
 
 type Props = { name: IconName; size?: number; className?: string }
 
