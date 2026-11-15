@@ -1,0 +1,17 @@
+.list { display: flex; flex-direction: column; gap: 24px; margin: 24px 0 0; padding: 0; list-style: none; }
+.card {
+  display: flex; flex-direction: column; padding: 24px;
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px;
+  transition: border-color .15s ease;
+}
+.card:hover { border-color: var(--white-50); }
+.card:hover .title { text-decoration: underline; text-underline-offset: 4px; }
+.card:focus-visible { outline: 2px solid var(--neon); outline-offset: 2px; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.go { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; letter-spacing: -0.01em; color: var(--neon); white-space: nowrap; }
+.title { margin-top: 12px; font-size: 21px; font-weight: 700; letter-spacing: -0.01em; }
+.meta { margin-top: 4px; font-size: 13px; letter-spacing: -0.01em; color: var(--muted); }
+.meta small { font-size: 12px; font-weight: 500; color: var(--dim); }
+.prog { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14px; letter-spacing: -0.01em; }
+.prog b { font-weight: 700; color: var(--neon); }
+.emptyRow { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 28px; }

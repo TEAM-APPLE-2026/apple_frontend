@@ -6,3 +6,4 @@
 .blue { background: var(--blue); }
 .line { border: 1px solid var(--line-strong); }
 .white { background: var(--text); color: var(--bg); }
+.dim { background: var(--white-10); color: var(--muted); }

@@ -4,7 +4,7 @@ import BackLink from '@/components/common/BackLink'
 import Icon from '@/components/common/Icon'
 import GroupActions from '@/features/firm/GroupActions'
 import { FIRM_GROUPS, findGroup, formatDeadline } from '@/features/firm/data'
-import s from '@/features/firm/FirmPage.module.css'
+import s from '@/components/layout/Page.module.css'
 
 export function generateStaticParams() {
   return FIRM_GROUPS.map((g) => ({ id: g.id }))

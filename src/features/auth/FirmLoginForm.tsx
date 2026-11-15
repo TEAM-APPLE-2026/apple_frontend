@@ -32,7 +32,7 @@ export default function FirmLoginForm() {
     if (bizState !== 'verified') return setBizState('required')
     const password = String(new FormData(e.currentTarget).get('password') ?? '')
     if (!demoLogin(password)) return setFailed(true)
-    firmActions.showToast(`${FIRM.name}로 로그인했습니다`)
+    firmActions.login(`${FIRM.name}로 로그인했습니다`)
     router.push('/firm')
   }
 

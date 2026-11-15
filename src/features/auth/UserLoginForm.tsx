@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Button from '@/components/common/Button'
 import Field from '@/components/common/Field'
 import Icon from '@/components/common/Icon'
+import { userActions } from '@/features/user/store'
 import { demoLogin } from './demo'
 import s from './AuthPage.module.css'
 
@@ -17,6 +18,7 @@ export default function UserLoginForm() {
     e.preventDefault()
     const password = String(new FormData(e.currentTarget).get('password') ?? '')
     if (!demoLogin(password)) return setFailed(true)
+    userActions.login()
     router.push('/home')
   }
 

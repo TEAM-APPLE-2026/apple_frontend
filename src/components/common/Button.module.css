@@ -17,4 +17,7 @@
 .chip { background: var(--white-10); border-color: var(--white-40); }
 .chip:hover:not(:disabled) { background: var(--white-15); border-color: var(--white-50); }
 
+.pressed { background: var(--text); border-color: var(--text); color: var(--bg); }
+.pressed:hover:not(:disabled) { filter: brightness(0.92); }
+
 .block { width: 100%; }

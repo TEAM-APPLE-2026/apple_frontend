@@ -6,7 +6,10 @@ import { usePathname } from 'next/navigation'
 import Icon, { type IconName } from '../common/Icon'
 import Logo from '../common/Logo'
 import SearchBox from '../common/SearchBox'
-import { currentUser, myGroups } from '@/lib/mock'
+import { currentUser } from '@/lib/mock'
+import { MY_GROUPS } from '@/features/groups/data'
+import { groupActions } from '@/features/groups/store'
+import { userActions, useUserState } from '@/features/user/store'
 import s from './UserShell.module.css'
 
 const NAV: { to: string; label: string; icon: IconName; end?: boolean }[] = [
@@ -21,17 +24,29 @@ function isNavActive(pathname: string, to: string, end?: boolean) {
   return pathname === to || pathname.startsWith(`${to}/`)
 }
 
-function Account() {
+// 로그인 전에는 로그인 링크, 로그인 후에는 닉네임 · 로그아웃
+function Account({ loggedIn }: { loggedIn: boolean }) {
+  if (!loggedIn) return <Link href="/login" className={s.name}>로그인</Link>
   return (
     <>
       <span className={s.name}>{currentUser.nickname} 님</span>
-      <button className={s.logout}>로그아웃</button>
+      <Link href="/" className={s.logout} onClick={logout}>로그아웃</Link>
     </>
   )
 }
 
+const logout = () => {
+  userActions.logout()
+  groupActions.reset()
+}
+
 export default function UserShell({ children }: { children: ReactNode }) {
   const pathname = usePathname()
+  const { loggedIn, joined } = useUserState()
+  const myGroups = loggedIn ? MY_GROUPS.filter((g) => joined.includes(g.id)) : []
+  // 홈 · 로고: 로그인 전에는 HANDE 소개 홈(/), 로그인 후에는 내 홈(/home)
+  const homeHref = loggedIn ? '/home' : '/'
+  const nav = NAV.map((n) => (n.to === '/home' ? { ...n, to: homeHref } : n))
   const [open, setOpen] = useState(false)
   const close = () => setOpen(false)
 
@@ -47,13 +62,13 @@ export default function UserShell({ children }: { children: ReactNode }) {
     <div className={`${s.shell} ${open ? s.open : ''}`}>
       <aside className={s.sidebar} id="sidebar" aria-label="메뉴" onClick={(e) => (e.target as HTMLElement).closest('a') && close()}>
         <div className={s.sideTop}>
-          <Logo href="/home" />
+          <Logo href={homeHref} />
           <button className={s.close} onClick={() => setOpen(false)} aria-label="메뉴 닫기">
             <Icon name="x" size={24} />
           </button>
         </div>
         <nav className={s.nav}>
-          {NAV.map((n) => (
+          {nav.map((n) => (
             <Link key={n.to} href={n.to} className={`${s.navItem} ${isNavActive(pathname, n.to, n.end) ? s.active : ''}`}>
               <Icon name={n.icon} size={18} />
               {n.label}
@@ -69,7 +84,7 @@ export default function UserShell({ children }: { children: ReactNode }) {
           </div>
         )}
         <div className={s.spacer} />
-        <div className={s.me}><Account /></div>
+        <div className={s.me}><Account loggedIn={loggedIn} /></div>
       </aside>
       <div className={s.backdrop} onClick={() => setOpen(false)} />
 
@@ -80,7 +95,7 @@ export default function UserShell({ children }: { children: ReactNode }) {
           </button>
           <SearchBox />
           <div className={s.topSpacer} />
-          <div className={s.topAuth}><Account /></div>
+          <div className={s.topAuth}><Account loggedIn={loggedIn} /></div>
         </header>
         <main>{children}</main>
       </div>

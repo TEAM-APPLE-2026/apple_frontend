@@ -34,7 +34,8 @@ export function FirmTag() {
   )
 }
 
-function Account() {
+function Account({ loggedIn }: { loggedIn: boolean }) {
+  if (!loggedIn) return <Link href="/login/firm" className={s.name}>로펌 로그인</Link>
   return (
     <>
       <span className={s.name}>{FIRM.name}</span>
@@ -45,7 +46,7 @@ function Account() {
 
 export default function FirmShell({ children }: { children: ReactNode }) {
   const pathname = usePathname()
-  const { toast } = useFirmState()
+  const { toast, loggedIn } = useFirmState()
   const [open, setOpen] = useState(false)
   const clearToast = useCallback(() => firmActions.clearToast(), [])
 
@@ -78,7 +79,7 @@ export default function FirmShell({ children }: { children: ReactNode }) {
           })}
         </nav>
         <div className={s.spacer} />
-        <div className={s.me}><Account /></div>
+        <div className={s.me}><Account loggedIn={loggedIn} /></div>
       </aside>
       <div className={s.backdrop} onClick={() => setOpen(false)} />
 
@@ -89,7 +90,7 @@ export default function FirmShell({ children }: { children: ReactNode }) {
           </button>
           <FirmTag />
           <div className={s.topSpacer} />
-          <div className={s.topAuth}><Account /></div>
+          <div className={s.topAuth}><Account loggedIn={loggedIn} /></div>
         </header>
         <main>{children}</main>
       </div>

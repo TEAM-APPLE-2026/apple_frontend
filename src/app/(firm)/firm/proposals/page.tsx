@@ -1,5 +1,5 @@
 import ProposalList from '@/features/firm/ProposalList'
-import s from '@/features/firm/FirmPage.module.css'
+import s from '@/components/layout/Page.module.css'
 
 // F-08 ~ F-11 내 제안서
 export default function FirmProposalsPage() {

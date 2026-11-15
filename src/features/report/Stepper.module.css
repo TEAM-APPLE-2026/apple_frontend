@@ -1,0 +1,8 @@
+.stepper { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.step {
+  flex: 1; min-width: 0; padding-top: 8px; border-top: 4px solid var(--white-15);
+  font-size: 13px; font-weight: 700; letter-spacing: -0.01em; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.step :global(.num) { font-weight: 600; }
+.done { border-top-color: var(--neon); color: var(--muted); }
+.now { border-top-color: var(--blue); color: var(--text); }

@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import BackLink from '@/components/common/BackLink'
 import ProposalForm from '@/features/firm/ProposalForm'
 import { FIRM_GROUPS, findGroup } from '@/features/firm/data'
-import s from '@/features/firm/FirmPage.module.css'
+import s from '@/components/layout/Page.module.css'
 
 export function generateStaticParams() {
   return FIRM_GROUPS.map((g) => ({ id: g.id }))

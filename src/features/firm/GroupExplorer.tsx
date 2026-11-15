@@ -6,7 +6,7 @@ import Button from '@/components/common/Button'
 import Icon from '@/components/common/Icon'
 import { FIRM_GROUPS, HARM_TYPES, VOTING_GROUP_ID, findGroup, formatDeadline } from './data'
 import { firmActions, useFirmState } from './store'
-import s from './FirmPage.module.css'
+import s from '@/components/layout/Page.module.css'
 
 const SORTS = { deadline: '제안 마감 빠른 순', members: '참여 많은 순', share: '득표 높은 순' } as const
 type SortKey = keyof typeof SORTS
