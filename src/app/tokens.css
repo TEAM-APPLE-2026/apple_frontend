@@ -14,6 +14,7 @@
   --top-firm: rgba(23, 24, 27, 0.96);
   --surface: #1c2029;
   --surface-line: rgba(255, 255, 255, 0.14);
+  --surface-2: #252a35;
 
   --text: #ffffff;
   --text-82: rgba(255, 255, 255, 0.82);
@@ -25,6 +26,11 @@
   --danger: #ff6b6b;
   --danger-text: #ffc2c2;
   --danger-08: rgba(255, 107, 107, 0.08);
+  --danger-10: rgba(255, 107, 107, 0.1);
+  --quote: #e6e6e6;
+  --modal-bg: #0b0b0d;
+  --warn-text: #ffd0d0;
+  --blue-16: rgba(26, 68, 255, 0.16);
   --danger-55: rgba(255, 107, 107, 0.55);
 
   --line: rgba(255, 255, 255, 0.16);

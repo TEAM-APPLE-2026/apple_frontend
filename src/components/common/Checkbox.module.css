@@ -1,0 +1,11 @@
+.row { position: relative; display: inline-flex; align-items: center; gap: 12px; min-height: 44px; font-size: 15px; letter-spacing: -0.01em; cursor: pointer; }
+.input { position: absolute; opacity: 0; width: 20px; height: 20px; margin: 0; }
+.box {
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 20px; height: 20px; border-radius: 4px;
+  background: var(--input-bg); border: 1.5px solid var(--white-50);
+}
+.check { visibility: hidden; }
+.input:checked + .box { background: var(--blue); border-color: var(--blue); }
+.input:checked + .box .check { visibility: visible; }
+.input:focus-visible + .box { outline: 2px solid var(--neon); outline-offset: 2px; }

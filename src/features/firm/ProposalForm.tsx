@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Button from '@/components/common/Button'
 import Field from '@/components/common/Field'
 import { firmActions, useFirmState, type Proposal } from './store'
-import s from './FirmPage.module.css'
+import s from '@/components/layout/Page.module.css'
 import p from './ProposalForm.module.css'
 
 type Values = Omit<Proposal, 'groupId' | 'submittedAt' | 'status'>

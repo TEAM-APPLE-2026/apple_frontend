@@ -1,4 +1,4 @@
-import s from './FirmPage.module.css'
+import s from '@/components/layout/Page.module.css'
 
 // F-12 · F-13 준비 중 화면
 export default function ComingSoon({ title }: { title: string }) {

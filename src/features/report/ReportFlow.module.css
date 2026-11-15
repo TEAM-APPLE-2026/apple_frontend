@@ -1,0 +1,66 @@
+.stepper { margin-top: 24px; }
+.title { margin-top: 32px; font-size: clamp(28px, 2.5vw + 16px, 36px); font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; }
+.box { margin-top: 32px; }
+.back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 13px; letter-spacing: -0.01em; color: var(--muted); white-space: nowrap; }
+.back:hover { color: var(--text); }
+.link { font-size: 13px; letter-spacing: -0.01em; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+.link:hover { color: var(--text); }
+.strongLink { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; text-decoration: underline; text-underline-offset: 3px; text-align: left; }
+
+/* U-02 글로 적기 */
+.story { margin-top: 32px; }
+.story textarea { min-height: 200px; }
+
+/* U-06 ~ U-08 정리 결과 */
+.quote {
+  display: flex; flex-direction: column; gap: 6px; margin: 32px 0 0; padding: 16px 20px;
+  background: var(--surface); border-left: 2px solid var(--blue); border-radius: 0 10px 10px 0;
+}
+.quoteLabel { font-size: 13px; letter-spacing: -0.01em; color: var(--muted); }
+.quoteText { font-size: 16px; line-height: 1.7; letter-spacing: -0.01em; color: var(--quote); }
+.frows { margin: 32px 0 0; padding: 4px 0; list-style: none; background: var(--surface); border: 1px solid var(--surface-line); border-radius: 10px; overflow: hidden; }
+.frow { display: flex; align-items: flex-start; gap: 20px; margin: 0 20px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.frow:last-child { border-bottom: 0; }
+.need { margin: 0; padding: 16px 20px 16px 17px; background: var(--danger-10); border-left: 3px solid var(--danger); border-bottom: 0; }
+.fLabel { width: 135px; flex-shrink: 0; font-size: 13px; letter-spacing: -0.01em; color: var(--muted); }
+.fValue { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.v, .vNeed { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+.vNeed { color: var(--danger); }
+.src { font-size: 14px; letter-spacing: -0.01em; color: var(--text-82); }
+.edit { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.editField input { font-size: 15px; }
+.editBtn, .fillBtn { flex-shrink: 0; font-size: 13px; letter-spacing: -0.01em; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.editBtn { color: var(--muted); }
+.editBtn:hover { color: var(--text); }
+.fillBtn { font-weight: 700; color: var(--text); }
+.sum { margin-top: 12px; font-size: 13px; letter-spacing: -0.01em; color: var(--muted); }
+.note { margin-top: 12px; font-size: 14px; line-height: 1.6; letter-spacing: -0.01em; color: var(--dim); }
+.checks { display: flex; flex-direction: column; align-items: flex-start; margin: 48px 0 0; padding: 0; border: 0; }
+.checksTitle { margin-bottom: 12px; padding: 0; font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+@media (max-width: 599px) {
+  .frow { flex-wrap: wrap; gap: 6px 12px; }
+  .fLabel { width: 100%; }
+}
+
+/* U-09 같은 사건 찾음 */
+.match {
+  display: flex; gap: 32px; margin-top: 32px; padding: 28px;
+  background: var(--surface); border: 2px solid var(--blue); border-radius: 10px;
+}
+.score { display: flex; flex-direction: column; gap: 6px; width: 140px; flex-shrink: 0; }
+.scoreNum { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.scoreNum :global(.num) { font-size: 48px; font-weight: 700; letter-spacing: -0.03em; color: var(--text); }
+.scoreLabel { font-size: 13px; font-weight: 700; letter-spacing: -0.01em; color: var(--neon); }
+.matchInfo { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.matchTitle { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+.matchMeta { font-size: 13px; letter-spacing: -0.01em; color: var(--muted); }
+.matchMeta small { font-size: 12px; font-weight: 500; color: var(--dim); }
+@media (max-width: 599px) { .match { flex-direction: column; gap: 16px; padding: 20px; } }
+
+/* U-12 완료 (480px) */
+.done { max-width: 480px; }
+.doneMark {
+  display: flex; align-items: center; justify-content: center; margin-top: 32px;
+  width: 56px; height: 56px; border: 2px solid var(--neon); border-radius: 28px;
+}
+.doneTitle { margin-top: 24px; font-size: clamp(28px, 2.5vw + 16px, 36px); font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; }

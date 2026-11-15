@@ -21,6 +21,7 @@ export type Proposal = {
 }
 
 type State = {
+  loggedIn: boolean
   /** 공동소송으로 정해진 그룹 id 목록 */
   lawsuitGroups: string[]
   proposals: Proposal[]
@@ -28,7 +29,7 @@ type State = {
 }
 
 const KEY = 'hande:firm-demo'
-const INITIAL: State = { lawsuitGroups: ['insurance', 'travel'], proposals: [], toast: null }
+const INITIAL: State = { loggedIn: false, lawsuitGroups: ['insurance', 'travel'], proposals: [], toast: null }
 
 let state: State = INITIAL
 let loaded = false
@@ -71,6 +72,7 @@ const NEXT: Record<ProposalStatus, ProposalStatus> = { submitted: 'voting', voti
 
 export const firmActions = {
   showToast: (toast: string) => { load(); set({ toast }) },
+  login: (toast: string) => { load(); set({ loggedIn: true, toast }) },
   clearToast: () => set({ toast: null }),
   /** [시연] 투표 중이던 그룹을 공동소송으로 확정 (F-01 → F-02) */
   closeVote: () => set({ lawsuitGroups: [...new Set([...state.lawsuitGroups, VOTING_GROUP_ID])] }),

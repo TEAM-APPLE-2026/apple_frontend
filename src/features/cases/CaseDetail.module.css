@@ -1,0 +1,13 @@
+/* dash-stages: 지난 단계 neon 3px · 현재 blue 5px · 남은 단계 line 3px */
+.stages { display: flex; gap: 8px; margin: 28px 0 0; padding: 0; list-style: none; }
+.stage { flex: 1; min-width: 0; padding-top: 10px; border-top: 3px solid var(--line); font-size: 13px; letter-spacing: -0.01em; color: var(--muted); }
+.past { border-top-color: var(--neon); color: var(--text); }
+.now { padding-top: 8px; border-top: 5px solid var(--blue); font-weight: 700; color: var(--text); }
+
+.noteActions { justify-content: flex-start; gap: 16px; }
+.note { flex: 1; min-width: 200px; font-size: 14px; line-height: 1.6; letter-spacing: -0.01em; color: var(--dim); }
+.note a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+.note a:hover { color: var(--text); }
+
+.modalDesc { margin-top: 8px; font-size: 14px; line-height: 1.6; letter-spacing: -0.01em; color: var(--muted); }
+.modalRow { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }

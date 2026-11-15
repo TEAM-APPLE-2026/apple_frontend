@@ -1,4 +1,4 @@
-/* Figma page: pt40 pb96 px48 — 목록 1080px, 상세 · 작성 880px */
+/* 공통 페이지 (Figma page: pt40 pb96 px48) — 목록 1080px, 상세 · 작성 880px, 좁은 화면 480px */
 .page { width: 100%; padding: 40px var(--page-px) 96px; }
 .wide { max-width: 1080px; }
 .narrow { max-width: 880px; }
@@ -52,8 +52,10 @@
 .dlBox { margin-top: 32px; padding: 4px 20px; background: var(--surface); border: 1px solid var(--surface-line); border-radius: 10px; }
 .dlRow { display: flex; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--line); }
 .dlRow:last-child { border-bottom: 0; }
+.dlCenter { align-items: center; }
 .dt { width: 150px; flex-shrink: 0; font-size: 14px; letter-spacing: -0.01em; color: var(--muted); }
 .dd { flex: 1; min-width: 0; margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+.ddText { font-weight: 400; line-height: 1.7; }
 .dd small { font-size: 12px; font-weight: 500; color: var(--dim); }
 @media (max-width: 599px) {
   .dlRow { flex-direction: column; gap: 4px; }
@@ -65,6 +67,7 @@
   margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line);
 }
 .actionsEnd { justify-content: flex-end; }
+.actionsStart { justify-content: flex-start; }
 
 /* 빈 상태 · 준비 중 */
 .emptyBox {

@@ -3,9 +3,9 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import Icon from './Icon'
 import s from './Button.module.css'
 
-// Figma 🧩 Button — style: Primary | Chip, size: SM | MD
+// Figma 🧩 Button — style: Primary | Chip | Pressed(투표함), size: SM | MD
 type Props = {
-  variant?: 'primary' | 'chip'
+  variant?: 'primary' | 'chip' | 'pressed'
   size?: 'sm' | 'md'
   block?: boolean
   check?: boolean
@@ -22,9 +22,9 @@ export default function Button({
   const cls = [s.btn, s[variant], s[size], block ? s.block : '', className ?? ''].join(' ')
   const content = (
     <>
-      {check && <Icon name="btn-check" size={18} />}
+      {check && <Icon name={variant === 'pressed' ? 'btn-check-dark' : 'btn-check'} size={18} />}
       <span>{children}</span>
-      {arrow && <Icon name="btn-arrow" size={18} />}
+      {arrow && <Icon name={variant === 'pressed' ? 'btn-arrow-dark' : 'btn-arrow'} size={18} />}
     </>
   )
   if (href !== undefined) return <Link href={href} className={cls}>{content}</Link>

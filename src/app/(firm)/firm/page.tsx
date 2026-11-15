@@ -1,6 +1,6 @@
 import Icon from '@/components/common/Icon'
 import GroupExplorer from '@/features/firm/GroupExplorer'
-import s from '@/features/firm/FirmPage.module.css'
+import s from '@/components/layout/Page.module.css'
 
 // F-01 ~ F-03 사건 탐색 (공동소송 그룹)
 export default function FirmExplorePage() {

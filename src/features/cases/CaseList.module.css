@@ -1,0 +1,17 @@
+.filters { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 24px; }
+.cnt { margin-left: auto; align-self: center; font-size: 13px; letter-spacing: -0.01em; color: var(--muted); white-space: nowrap; }
+.emptyRow { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 28px; }
+
+/* case-list: 사건명 246 · 112 · 112 · 112 · 100 · 100 */
+.wrap { margin-top: 32px; }
+.tbl thead th { padding-top: 14px; padding-bottom: 10px; }
+.tbl tbody th, .tbl tbody td { padding-top: 18px; padding-bottom: 18px; }
+.cHarm, .cStatus, .cCount { width: 128px; }
+.cDate { width: 116px; }
+.name { font-size: 15px; font-weight: 700; }
+.name a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.harm { font-size: 13px; color: var(--muted); }
+.count { font-size: 14px; font-weight: 700; line-height: 1.4; }
+.count :global(.num) { font-weight: 600; }
+.count small { font-size: 12px; font-weight: 400; color: var(--dim); }
+.date { font-size: 14px; color: var(--muted); white-space: nowrap; }

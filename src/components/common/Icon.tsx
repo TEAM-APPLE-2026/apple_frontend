@@ -13,6 +13,9 @@ export type IconName =
   | 'firm-scale' | 'status-check' | 'lock-note'
   | 'fnav-search' | 'fnav-search-on' | 'fnav-file' | 'fnav-file-on'
   | 'fnav-scale' | 'fnav-scale-on' | 'fnav-building' | 'fnav-building-on'
+  // 일반 사용자 화면 (Figma 02 일반 사용자)
+  | 'spinner' | 'alert-lg' | 'search-lg' | 'done-check' | 'modal-x'
+  | 'vote-check' | 'vote-alert' | 'compare-chevron' | 'compare-arrow' | 'tab-lock' | 'lock-lg'
 
 type Props = { name: IconName; size?: number; className?: string }
 

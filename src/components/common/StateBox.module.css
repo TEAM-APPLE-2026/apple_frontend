@@ -1,0 +1,11 @@
+.box {
+  display: flex; flex-direction: column; align-items: center; padding: 40px 24px;
+  background: var(--surface); border: 1px solid var(--surface-line); border-radius: 10px; text-align: center;
+}
+.error { border-color: var(--danger-55); }
+.title { margin-top: 16px; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+.desc { margin-top: 6px; font-size: 14px; line-height: 1.6; letter-spacing: -0.01em; color: var(--muted); }
+.row { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 24px; }
+.spin { animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation-duration: 3s; } }

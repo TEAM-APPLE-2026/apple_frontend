@@ -5,7 +5,7 @@ import Button from '@/components/common/Button'
 import Icon from '@/components/common/Icon'
 import { findGroup } from './data'
 import { firmActions, useFirmState, type ProposalStatus } from './store'
-import s from './FirmPage.module.css'
+import s from '@/components/layout/Page.module.css'
 import l from './ProposalList.module.css'
 
 const STATUS: Record<ProposalStatus, { label: string; tone: BadgeTone }> = {

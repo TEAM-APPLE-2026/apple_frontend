@@ -2,7 +2,7 @@
 
 import Button from '@/components/common/Button'
 import { useFirmState } from './store'
-import s from './FirmPage.module.css'
+import s from '@/components/layout/Page.module.css'
 
 // F-04 page-actions: 제출 여부 · 공동소송 확정 여부에 따라 주 버튼이 바뀜
 export default function GroupActions({ groupId }: { groupId: string }) {
