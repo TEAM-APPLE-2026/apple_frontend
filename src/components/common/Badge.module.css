@@ -1,0 +1,8 @@
+.badge {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  min-height: 24px; padding: 0 8px; border-radius: 4px;
+  font-size: 12px; font-weight: 700; white-space: nowrap; color: var(--text);
+}
+.blue { background: var(--blue); }
+.line { border: 1px solid var(--line-strong); }
+.white { background: var(--text); color: var(--bg); }

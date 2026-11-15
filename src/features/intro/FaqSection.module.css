@@ -1,0 +1,13 @@
+.section { padding: clamp(96px, 12.5vw, 180px) var(--page-px) 0; }
+.list { margin: 48px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.item { border-bottom: 1px solid var(--line); }
+.open { padding-bottom: 24px; }
+.qWrap { margin: 0; font: inherit; }
+.q {
+  display: flex; align-items: center; gap: 16px; width: 100%; min-height: 72px; padding: 20px 0;
+  text-align: left;
+}
+.q:focus-visible { outline: 2px solid var(--neon); outline-offset: -2px; }
+.qText { flex: 1; min-width: 0; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+.q:hover .qText { text-decoration: underline; text-underline-offset: 4px; }
+.a { max-width: 704px; font-size: 15px; line-height: 1.7; letter-spacing: -0.01em; color: var(--muted); }

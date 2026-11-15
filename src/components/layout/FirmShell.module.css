@@ -1,0 +1,12 @@
+/* UserShell 레이아웃 위에 로펌 색만 덮어씀 (Figma Sidebar/Firm · Topbar/Firm) */
+.shell { background: var(--firm-bg); }
+.sidebar { background: var(--firm-side); }
+.topbar { background: var(--top-firm); }
+.tagWrap { display: flex; padding: 12px 12px 0; }
+.tag {
+  display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+  min-height: 26px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: 4px;
+  font-size: 12px; font-weight: 700; white-space: nowrap; color: var(--text);
+}
+/* 토스트는 메인 영역 가운데 */
+@media (min-width: 1024px) { .toast { left: var(--sidebar-w); } }
