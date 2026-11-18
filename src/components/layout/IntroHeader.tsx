@@ -9,10 +9,11 @@ import Icon from '../common/Icon'
 import s from './IntroHeader.module.css'
 
 // 소개 페이지의 섹션 앵커. 다른 화면에서는 홈으로 이동한 뒤 해당 섹션으로 스크롤.
-const NAV = [
+const NAV: { hash?: string; to?: string; label: string; num?: boolean }[] = [
   { hash: 'organize', label: '정리하기' },
   { hash: 'gather', label: '모으기' },
   { hash: 'decide', label: '대응하기' },
+  { to: '/cases', label: '사건 둘러보기' },
   { hash: 'faq', label: 'FAQ', num: true },
 ]
 
@@ -50,10 +51,9 @@ export default function IntroHeader() {
         <Logo />
         <div className={s.spacer} />
         <nav className={s.nav} aria-label="주요 메뉴">
-          {NAV.map((n) => (
-            <a key={n.hash} href={anchor(n.hash)} className={n.num ? 'num' : undefined}>{n.label}</a>
-          ))}
-          <Link href="/cases">사건 둘러보기</Link>
+          {NAV.map((n) => n.to
+            ? <Link key={n.to} href={n.to}>{n.label}</Link>
+            : <a key={n.hash} href={anchor(n.hash!)} className={n.num ? 'num' : undefined}>{n.label}</a>)}
         </nav>
         <div className={s.spacer} />
         <div className={s.right}>
@@ -72,10 +72,9 @@ export default function IntroHeader() {
       </div>
 
       <nav id="intro-menu" className={s.panel} aria-label="메뉴" hidden={!open}>
-        {NAV.map((n) => (
-          <a key={n.hash} href={anchor(n.hash)} className={`${s.panelLink} ${n.num ? 'num' : ''}`} onClick={close}>{n.label}</a>
-        ))}
-        <Link href="/cases" className={s.panelLink} onClick={close}>사건 둘러보기</Link>
+        {NAV.map((n) => n.to
+          ? <Link key={n.to} href={n.to} className={s.panelLink} onClick={close}>{n.label}</Link>
+          : <a key={n.hash} href={anchor(n.hash!)} className={`${s.panelLink} ${n.num ? 'num' : ''}`} onClick={close}>{n.label}</a>)}
         <Link href="/report" className={s.panelLink} onClick={close}>피해 등록하기</Link>
         <Link href="/login" className={s.panelLogin} onClick={close}>로그인</Link>
       </nav>

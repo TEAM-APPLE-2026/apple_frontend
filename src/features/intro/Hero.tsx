@@ -4,29 +4,46 @@ import { useEffect, useState } from 'react'
 import Icon from '@/components/common/Icon'
 import s from './Hero.module.css'
 
+const FIRST = '한곳으로 모아줍니다'
 const WORD = 'HANDE'
 const RING = 'SCROLL DOWN • SCROLL DOWN • '
 
-// Figma hero: SAME HARM, ONE VOICE · 타자기 HANDE · 리드 · scroll-down 버튼
+// Figma hero: SAME HARM, ONE VOICE · 타자기 "한곳으로 모아줍니다" → 지우고 → "HANDE" · 리드 · scroll-down 버튼
 export default function Hero() {
-  // 타자기 효과: 글자를 하나씩 보여줌. 숨긴 글자는 자리를 차지해 가운데 정렬이 흔들리지 않음.
-  const [typed, setTyped] = useState(0)
+  const [text, setText] = useState('')
   useEffect(() => {
-    if (typed >= WORD.length) return
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const id = window.setTimeout(() => setTyped(reduce ? WORD.length : typed + 1), reduce ? 0 : 140)
-    return () => window.clearTimeout(id)
-  }, [typed])
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setText(WORD)
+      return
+    }
+    let timer = 0
+    const wait = (fn: () => void, ms: number) => { timer = window.setTimeout(fn, ms) }
+    const typeWord = (i: number) => {
+      setText(WORD.slice(0, i))
+      if (i < WORD.length) wait(() => typeWord(i + 1), 140)
+    }
+    const erase = (i: number) => {
+      setText(FIRST.slice(0, i))
+      if (i > 0) wait(() => erase(i - 1), 60)
+      else wait(() => typeWord(1), 300)
+    }
+    const typeFirst = (i: number) => {
+      setText(FIRST.slice(0, i))
+      if (i < FIRST.length) wait(() => typeFirst(i + 1), 120)
+      else wait(() => erase(FIRST.length - 1), 1200)
+    }
+    wait(() => typeFirst(1), 400)
+    return () => window.clearTimeout(timer)
+  }, [])
 
   const scrollDown = () => document.getElementById('organize')?.scrollIntoView({ behavior: 'smooth' })
 
   return (
     <section className={s.hero} aria-labelledby="hero-title">
       <p className={`num ${s.kicker}`}>SAME HARM, ONE VOICE</p>
-      <h1 id="hero-title" className={`num ${s.title}`} aria-label={WORD}>
-        <span aria-hidden>{WORD.slice(0, typed)}</span>
+      <h1 id="hero-title" className={`num ${s.title}`} aria-label={`${WORD}, 흩어진 피해를 ${FIRST}`}>
+        <span aria-hidden>{text}</span>
         <span className={s.cursor} aria-hidden />
-        <span aria-hidden className={s.rest}>{WORD.slice(typed)}</span>
       </h1>
       <p className={s.lead}>
         같은 피해를 입은 사람들을 AI가 <strong>한 그룹으로 모으고</strong>,<br />

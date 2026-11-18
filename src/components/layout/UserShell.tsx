@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import Icon, { type IconName } from '../common/Icon'
 import Logo from '../common/Logo'
 import IntroHeader from './IntroHeader'
+import FluidBackground from '../common/FluidBackground'
 import SearchBox from '../common/SearchBox'
 import { currentUser } from '@/lib/mock'
 import { MY_GROUPS } from '@/features/groups/data'
@@ -65,6 +66,7 @@ export default function UserShell({ children }: { children: ReactNode }) {
   if (!loggedIn) {
     return (
       <div className={s.guest}>
+        <FluidBackground />
         <IntroHeader />
         <main className={s.guestMain}>{children}</main>
       </div>
@@ -73,6 +75,7 @@ export default function UserShell({ children }: { children: ReactNode }) {
 
   return (
     <div className={`${s.shell} ${open ? s.open : ''}`}>
+      <FluidBackground />
       <aside className={s.sidebar} id="sidebar" aria-label="메뉴" onClick={(e) => (e.target as HTMLElement).closest('a') && close()}>
         <div className={s.sideTop}>
           <Logo href={homeHref} />
