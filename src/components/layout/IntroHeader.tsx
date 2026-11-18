@@ -57,7 +57,6 @@ export default function IntroHeader() {
         </nav>
         <div className={s.spacer} />
         <div className={s.right}>
-          <Link href="/login" className={s.login}>로그인</Link>
           <Button href="/start" variant="chip" size="sm">시작하기</Button>
         </div>
         <button
@@ -76,7 +75,6 @@ export default function IntroHeader() {
           ? <Link key={n.to} href={n.to} className={s.panelLink} onClick={close}>{n.label}</Link>
           : <a key={n.hash} href={anchor(n.hash!)} className={`${s.panelLink} ${n.num ? 'num' : ''}`} onClick={close}>{n.label}</a>)}
         <Link href="/report" className={s.panelLink} onClick={close}>피해 등록하기</Link>
-        <Link href="/login" className={s.panelLogin} onClick={close}>로그인</Link>
       </nav>
     </header>
   )
