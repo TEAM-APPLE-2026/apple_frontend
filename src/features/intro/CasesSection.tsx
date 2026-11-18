@@ -9,7 +9,7 @@ import { CASES, type CaseCard } from './data'
 import s from './CasesSection.module.css'
 
 // 점 1개 = 1명 · 500명이 넘으면 점 1개 = 5명 · 빈 점은 목표까지 남은 인원
-function dotCounts({ count, goal }: CaseCard) {
+export function dotCounts({ count, goal }: { count: number; goal?: number }) {
   const unit = Math.max(count, goal ?? 0) > 500 ? 5 : 1
   const filled = Math.ceil(count / unit)
   const empty = goal ? Math.max(Math.ceil(goal / unit) - filled, 0) : 0

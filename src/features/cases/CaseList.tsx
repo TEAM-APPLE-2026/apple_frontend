@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Badge from '@/components/common/Badge'
 import Button from '@/components/common/Button'
-import p from '@/components/layout/Page.module.css'
+import Icon from '@/components/common/Icon'
+import { dotCounts } from '@/features/intro/CasesSection'
 import { CASES, HARMS, STATUS, type CaseStatus } from './data'
 import s from './CaseList.module.css'
 
@@ -43,23 +44,23 @@ export default function CaseList() {
   return (
     <>
       <div className={s.filters}>
-        <label className={p.filter}>
+        <label className={s.filter}>
           상태
-          <select className={p.select} value={status} onChange={(e) => setStatus(e.target.value as CaseStatus | '')}>
+          <select className={s.select} value={status} onChange={(e) => setStatus(e.target.value as CaseStatus | '')}>
             <option value="">전체</option>
             {STATUS_KEYS.map((k) => <option key={k} value={k}>{STATUS[k].label}</option>)}
           </select>
         </label>
-        <label className={p.filter}>
+        <label className={s.filter}>
           피해 유형
-          <select className={p.select} value={harm} onChange={(e) => setHarm(e.target.value)}>
+          <select className={s.select} value={harm} onChange={(e) => setHarm(e.target.value)}>
             <option value="">전체</option>
             {HARMS.map((h) => <option key={h} value={h}>{h}</option>)}
           </select>
         </label>
-        <label className={p.filter}>
+        <label className={s.filter}>
           정렬
-          <select className={p.select} value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
+          <select className={s.select} value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
             {Object.entries(SORTS).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
           </select>
         </label>
@@ -67,48 +68,51 @@ export default function CaseList() {
       </div>
 
       {rows.length === 0 ? (
-        <div className={p.emptyBox}>
+        <div className={s.empty}>
           {/* 검색만 했을 때(U-14)와 필터를 걸었을 때(U-15) 안내가 다름 */}
-          <p className={p.emptyTitle}>{filtered ? '조건에 맞는 사건이 없어요' : '아직 이 사건으로 모인 그룹이 없어요'}</p>
-          <p className={p.emptyDesc}>{filtered ? '필터를 바꾸거나, 겪은 일을 적어 새 그룹을 열 수 있어요.' : '겪은 일을 적으면 새 그룹을 열 수 있어요.'}</p>
+          <p className={s.emptyTitle}>{filtered ? '조건에 맞는 사건이 없어요' : '아직 이 사건으로 모인 그룹이 없어요'}</p>
+          <p className={s.emptyDesc}>{filtered ? '필터를 바꾸거나, 겪은 일을 적어 새 그룹을 열 수 있어요.' : '겪은 일을 적으면 새 그룹을 열 수 있어요.'}</p>
           <div className={s.emptyRow}>
             {filtered && <Button variant="chip" size="sm" onClick={resetFilters}>필터 초기화</Button>}
             <Button href="/report" size="sm">내 피해 등록하고 새 그룹 만들기</Button>
           </div>
         </div>
       ) : (
-        <div className={`${p.tblWrap} ${s.wrap}`}>
-          <table className={`${p.tbl} ${s.tbl}`}>
-            <thead>
-              <tr>
-                <th scope="col">사건명</th>
-                <th scope="col" className={s.cHarm}>피해 유형</th>
-                <th scope="col" className={s.cStatus}>상태</th>
-                <th scope="col" className={s.cCount}>참여 / 목표</th>
-                <th scope="col" className={s.cDate}>모집 마감</th>
-                <th scope="col" className={s.cDate}>개설일</th>
-                <th scope="col"><span className="sr-only">보기</span></th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((c) => (
-                <tr key={c.id}>
-                  <th scope="row" className={s.name}><Link href={`/cases/${c.id}`}>{c.title}</Link></th>
-                  <td className={s.harm}>{c.harm}</td>
-                  <td><Badge tone={STATUS[c.status].tone}>{STATUS[c.status].label}</Badge></td>
-                  <td className={s.count}>
-                    <span className="num">{c.count.toLocaleString()}</span>
-                    {c.goal && <> <span className="num">/</span> <span className="num">{c.goal.toLocaleString()}</span></>}명{' '}
-                    <small>[예시 수치]</small>
-                  </td>
-                  <td className={s.date}>{c.deadline}</td>
-                  <td className={s.date}>{c.created}</td>
-                  <td className={p.action}><Button href={`/cases/${c.id}`} variant="chip" size="sm">보기</Button></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ul className={s.grid} aria-label="사건 목록">
+          {rows.map((c) => {
+            const { filled, empty } = dotCounts(c)
+            return (
+              <li key={c.id}>
+                <article className={s.card} aria-labelledby={`case-${c.id}`}>
+                  <div className={s.top}>
+                    <span className={s.category}>{c.harm}</span>
+                    <Badge tone={STATUS[c.status].tone}>{STATUS[c.status].label}</Badge>
+                  </div>
+                  <h2 id={`case-${c.id}`} className={s.title}><Link href={`/cases/${c.id}`}>{c.title}</Link></h2>
+                  <div className={s.cntBox}>
+                    <p className={s.count}>
+                      <span className={`num ${s.countNum}`}>{c.count.toLocaleString()}</span>명
+                      {c.goal && <> <span className="num">/</span> 목표 <span className="num">{c.goal.toLocaleString()}</span>명</>}
+                    </p>
+                    <p className={s.note}>[예시 수치]</p>
+                  </div>
+                  <div className={s.dots} role="img" aria-label={c.goal ? `목표 ${c.goal}명 중 ${c.count}명 참여` : `${c.count}명 참여`}>
+                    {Array.from({ length: filled }, (_, i) => <span key={`f${i}`} className={s.dot} />)}
+                    {Array.from({ length: empty }, (_, i) => <span key={`e${i}`} className={s.dotEmpty} />)}
+                  </div>
+                  <dl className={s.dates}>
+                    <div><dt>모집 마감</dt><dd className="num">{c.deadline}</dd></div>
+                    <div><dt>개설일</dt><dd className="num">{c.created}</dd></div>
+                  </dl>
+                  <Link href={`/cases/${c.id}`} className={s.go}>
+                    보기
+                    <Icon name="card-arrow" size={16} />
+                  </Link>
+                </article>
+              </li>
+            )
+          })}
+        </ul>
       )}
     </>
   )
