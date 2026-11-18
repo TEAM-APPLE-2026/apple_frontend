@@ -1,5 +1,5 @@
 /* 공통 페이지 (Figma page: pt40 pb96 px48) — 목록 1080px, 상세 · 작성 880px, 좁은 화면 480px */
-.page { width: 100%; padding: 40px var(--page-px) 96px; }
+.page { width: 100%; margin: 0 auto; padding: 40px var(--page-px) 96px; }
 .wide { max-width: 1080px; }
 .narrow { max-width: 880px; }
 @media (max-width: 599px) { .page { padding-top: 28px; padding-bottom: 64px; } }
