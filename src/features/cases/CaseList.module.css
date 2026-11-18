@@ -1,6 +1,6 @@
 /* 사건 둘러보기 — 소개 홈(IntroHome · CasesSection)과 같은 톤 */
-.bleed { flex: 1; background: var(--bg); }
-.page { width: 100%; max-width: 1280px; padding: clamp(48px, 6vw, 80px) var(--page-px) 96px; }
+.bleed { flex: 1; }
+.page { position: relative; z-index: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: clamp(48px, 6vw, 80px) var(--page-px) 96px; }
 
 /* 머리: eyebrow + 굵은/얇은 두 줄 제목 */
 .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--dim); }

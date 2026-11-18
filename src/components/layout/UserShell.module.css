@@ -1,4 +1,4 @@
-.shell { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; background: var(--svc-bg); }
+.shell { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; position: relative; isolation: isolate; background: var(--bg); }
 
 /* ── Sidebar (Figma Sidebar/User) ── */
 .sidebar {
@@ -31,13 +31,13 @@
 .logout:hover { color: var(--text); }
 
 /* ── Main + Topbar (Figma Topbar/User) ── */
-.main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.main { position: relative; z-index: 1; flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .main > main { flex: 1; display: flex; flex-direction: column; }
 .topbar {
   position: sticky; top: 0; z-index: 10;
   display: flex; align-items: center; gap: 24px;
   height: var(--intro-header-h); padding: 0 var(--page-px);
-  background: var(--header-bg); border-bottom: 0;
+  background: rgba(0, 0, 0, 0.35); border-bottom: 0;
   backdrop-filter: blur(8px);
 }
 .menuBtn { display: none; }
@@ -55,7 +55,7 @@
 /* ── 태블릿/모바일: 사이드바를 드로어로 ── */
 @media (max-width: 1023px) {
   .topLogo, .topNav, .deskOnly { display: none; }
-  .topbar { height: var(--topbar-h); background: var(--top-user); }
+  .topbar { height: var(--topbar-h); background: rgba(0, 0, 0, 0.35); }
   .sidebar {
     display: flex;
     position: fixed; left: 0; top: 0; z-index: 50;
@@ -77,5 +77,5 @@
 }
 
 /* 로그인 전: IntroHeader + 본문 */
-.guest { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; background: var(--bg); }
-.guestMain { flex: 1; display: flex; flex-direction: column; }
+.guest { position: relative; isolation: isolate; display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; background: var(--bg); }
+.guestMain { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; }

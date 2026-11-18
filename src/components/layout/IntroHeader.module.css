@@ -3,7 +3,7 @@
 .bar {
   display: flex; align-items: center; gap: 24px;
   height: var(--intro-header-h); padding: 0 var(--page-px);
-  background: var(--header-bg); backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(8px);
 }
 .spacer { flex: 1; }
 .nav { display: flex; align-items: center; gap: 28px; font-size: 13px; font-weight: 500; color: var(--muted); white-space: nowrap; }

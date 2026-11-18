@@ -1,5 +1,5 @@
 /* Figma I-01 홈 (소개 페이지) — 1440 프레임, 섹션 1280 (px48) */
-.home { background: var(--bg); min-height: 100vh; }
+.home { min-height: 100vh; }
 .wrap { max-width: 1280px; margin: 0 auto; }
 
 /* ── 섹션 공통 ── */
