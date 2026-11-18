@@ -1,17 +1,73 @@
-.filters { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 24px; }
+/* 사건 둘러보기 — 소개 홈(IntroHome · CasesSection)과 같은 톤 */
+.bleed { flex: 1; background: var(--bg); }
+.page { width: 100%; max-width: 1280px; padding: clamp(48px, 6vw, 80px) var(--page-px) 96px; }
+
+/* 머리: eyebrow + 굵은/얇은 두 줄 제목 */
+.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--dim); }
+.h1 {
+  display: flex; flex-direction: column; margin-top: 12px;
+  font-size: clamp(36px, 2.6vw + 17px, 54px); line-height: 1.15; letter-spacing: -0.03em;
+}
+.h1Strong { font-weight: 700; color: var(--text); }
+.h1Light { font-weight: 400; color: var(--muted); }
+.lead { max-width: 540px; margin-top: 24px; font-size: 17px; line-height: 1.6; letter-spacing: -0.01em; color: var(--muted); }
+
+/* 필터 */
+.filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; margin-top: 48px; }
+.filter { display: flex; flex-direction: column; gap: 8px; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; color: var(--muted); }
+.select {
+  appearance: none; min-width: 150px; height: 40px; padding: 0 38px 0 16px;
+  background: var(--input-bg) url(/icons/chevron-down.svg) no-repeat right 14px center / 14px 14px;
+  border: 1px solid var(--white-22); border-radius: 20px;
+  color: var(--text); font: inherit; font-size: 14px; font-weight: 400; letter-spacing: -0.01em; cursor: pointer;
+}
+.select:hover { border-color: var(--white-40); }
+.select:focus-visible { outline: 2px solid var(--neon); outline-offset: 2px; }
+.select option { background: var(--surface); }
 .cnt { margin-left: auto; align-self: center; font-size: 13px; letter-spacing: -0.01em; color: var(--muted); white-space: nowrap; }
+
+/* 카드 그리드 */
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 32px 0 0; padding: 0; list-style: none; }
+.card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 12px; height: 100%;
+  min-height: 342px; padding: 24px;
+  border: 1px solid var(--line-strong); border-radius: 10px;
+  transition: border-color .15s ease, background-color .15s ease;
+}
+.card:hover { border-color: var(--white-50); background: var(--white-08); }
+.top { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.category { font-size: 13px; letter-spacing: -0.01em; color: var(--muted); white-space: nowrap; }
+.title { margin: 0; font-size: 19px; font-weight: 700; line-height: 1.35; letter-spacing: -0.01em; }
+.title a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.cntBox { display: flex; flex-direction: column; gap: 2px; width: 100%; }
+.count { font-size: 15px; white-space: nowrap; }
+.countNum { font-size: 26px; }
+.note { font-size: 13px; letter-spacing: -0.01em; color: var(--dim); }
+
+.dots { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 3px; width: 100%; min-height: 30px; }
+.dot, .dotEmpty { width: 6px; height: 6px; background: center / 6px 6px no-repeat; }
+.dot { background-image: url(/icons/dot.svg); }
+.dotEmpty { background-image: url(/icons/dot-empty.svg); }
+
+.dates { display: flex; flex-direction: column; gap: 4px; width: 100%; margin: auto 0 0; padding-top: 12px; border-top: 1px solid var(--line); font-size: 14px; letter-spacing: -0.01em; color: var(--muted); }
+.dates div { display: flex; justify-content: space-between; gap: 12px; }
+.dates dt { color: var(--dim); }
+.dates dd { margin: 0; }
+.go { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; letter-spacing: -0.01em; color: var(--neon); }
+.go:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* 빈 상태 */
+.empty {
+  display: flex; flex-direction: column; align-items: center; margin-top: 32px; padding: 56px 24px;
+  border: 1px solid var(--line-strong); border-radius: 10px; text-align: center;
+}
+.emptyTitle { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+.emptyDesc { margin-top: 8px; font-size: 15px; letter-spacing: -0.01em; color: var(--muted); }
 .emptyRow { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 28px; }
 
-/* case-list: 사건명 246 · 112 · 112 · 112 · 100 · 100 */
-.wrap { margin-top: 32px; }
-.tbl thead th { padding-top: 14px; padding-bottom: 10px; }
-.tbl tbody th, .tbl tbody td { padding-top: 18px; padding-bottom: 18px; }
-.cHarm, .cStatus, .cCount { width: 128px; }
-.cDate { width: 116px; }
-.name { font-size: 15px; font-weight: 700; }
-.name a:hover { text-decoration: underline; text-underline-offset: 3px; }
-.harm { font-size: 13px; color: var(--muted); }
-.count { font-size: 14px; font-weight: 700; line-height: 1.4; }
-.count :global(.num) { font-weight: 600; }
-.count small { font-size: 12px; font-weight: 400; color: var(--dim); }
-.date { font-size: 14px; color: var(--muted); white-space: nowrap; }
+@media (max-width: 1023px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 599px) {
+  .grid { grid-template-columns: 1fr; }
+  .card { min-height: 0; }
+  .cnt { margin-left: 0; width: 100%; }
+}

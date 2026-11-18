@@ -1,10 +1,10 @@
-.shell { display: flex; min-height: 100vh; min-height: 100dvh; background: var(--svc-bg); }
+.shell { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; background: var(--svc-bg); }
 
 /* ── Sidebar (Figma Sidebar/User) ── */
 .sidebar {
   position: sticky; top: 0; height: 100vh; height: 100dvh;
   width: var(--sidebar-w); flex-shrink: 0;
-  display: flex; flex-direction: column;
+  display: none; flex-direction: column;
   padding: 16px 12px 20px;
   background: var(--svc-side); border-right: 1px solid var(--line);
   overflow-y: auto;
@@ -32,21 +32,32 @@
 
 /* ── Main + Topbar (Figma Topbar/User) ── */
 .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.main > main { flex: 1; display: flex; flex-direction: column; }
 .topbar {
   position: sticky; top: 0; z-index: 10;
-  display: flex; align-items: center; gap: 16px;
-  height: var(--topbar-h); padding: 0 32px;
-  background: var(--top-user); border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 24px;
+  height: var(--intro-header-h); padding: 0 var(--page-px);
+  background: var(--header-bg); border-bottom: 0;
   backdrop-filter: blur(8px);
 }
 .menuBtn { display: none; }
+.topLogo { display: flex; }
+.topNav { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 28px; font-size: 13px; font-weight: 500; color: var(--muted); white-space: nowrap; }
+.topNav a { line-height: 20px; }
+.topNav a:hover { color: var(--text); }
+.topActive { color: var(--text); font-weight: 700; }
 .topSpacer { flex: 1; }
+.topRight { display: flex; align-items: center; gap: 14px; }
+.search { width: 220px; }
 .topAuth { display: flex; align-items: center; gap: 14px; font-size: 13px; letter-spacing: -0.01em; white-space: nowrap; }
 .backdrop { display: none; }
 
 /* ── 태블릿/모바일: 사이드바를 드로어로 ── */
 @media (max-width: 1023px) {
+  .topLogo, .topNav, .deskOnly { display: none; }
+  .topbar { height: var(--topbar-h); background: var(--top-user); }
   .sidebar {
+    display: flex;
     position: fixed; left: 0; top: 0; z-index: 50;
     transform: translateX(-100%); transition: transform .22s ease, visibility .22s;
     visibility: hidden;
@@ -56,8 +67,15 @@
   .close { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; margin-right: -8px; }
   .menuBtn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; margin-left: -8px; flex-shrink: 0; }
   .topbar { padding: 0 20px; gap: 12px; }
+  .topRight { flex: 1; min-width: 0; gap: 12px; justify-content: space-between; }
+  .topSpacer { display: none; }
+  .search { width: auto; max-width: 420px; }
 }
 @media (max-width: 599px) {
   /* 계정 정보는 드로어 하단에서만 보여줌 */
   .topAuth, .topSpacer { display: none; }
 }
+
+/* 로그인 전: IntroHeader + 본문 */
+.guest { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; background: var(--bg); }
+.guestMain { flex: 1; display: flex; flex-direction: column; }

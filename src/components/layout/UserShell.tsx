@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Icon, { type IconName } from '../common/Icon'
 import Logo from '../common/Logo'
+import IntroHeader from './IntroHeader'
 import SearchBox from '../common/SearchBox'
 import { currentUser } from '@/lib/mock'
 import { MY_GROUPS } from '@/features/groups/data'
@@ -46,7 +47,9 @@ export default function UserShell({ children }: { children: ReactNode }) {
   const myGroups = loggedIn ? MY_GROUPS.filter((g) => joined.includes(g.id)) : []
   // 홈 · 로고: 로그인 전에는 HANDE 소개 홈(/), 로그인 후에는 내 홈(/home)
   const homeHref = loggedIn ? '/home' : '/'
-  const nav = NAV.map((n) => (n.to === '/home' ? { ...n, to: homeHref } : n))
+  // 로그인 전에는 피해 등록 · 내 그룹 메뉴를 숨김
+  const nav = NAV.filter((n) => loggedIn || (n.to !== '/report' && n.to !== '/groups'))
+    .map((n) => (n.to === '/home' ? { ...n, to: homeHref } : n))
   const [open, setOpen] = useState(false)
   const close = () => setOpen(false)
 
@@ -57,6 +60,16 @@ export default function UserShell({ children }: { children: ReactNode }) {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [open])
+
+  // 로그인 전에는 소개 홈과 똑같은 상단 헤더를 그대로 사용
+  if (!loggedIn) {
+    return (
+      <div className={s.guest}>
+        <IntroHeader />
+        <main className={s.guestMain}>{children}</main>
+      </div>
+    )
+  }
 
   return (
     <div className={`${s.shell} ${open ? s.open : ''}`}>
@@ -93,9 +106,17 @@ export default function UserShell({ children }: { children: ReactNode }) {
           <button className={s.menuBtn} onClick={() => setOpen(true)} aria-label="메뉴 열기" aria-controls="sidebar" aria-expanded={open}>
             <Icon name="menu" size={24} />
           </button>
-          <SearchBox />
+          <div className={s.topLogo}><Logo href={homeHref} /></div>
+          <nav className={s.topNav} aria-label="주요 메뉴">
+            {nav.map((n) => (
+              <Link key={n.to} href={n.to} className={isNavActive(pathname, n.to, n.end) ? s.topActive : undefined}>{n.label}</Link>
+            ))}
+          </nav>
           <div className={s.topSpacer} />
-          <div className={s.topAuth}><Account loggedIn={loggedIn} /></div>
+          <div className={s.topRight}>
+            <SearchBox className={s.search} />
+            <div className={s.topAuth}><Account loggedIn={loggedIn} /></div>
+          </div>
         </header>
         <main>{children}</main>
       </div>
