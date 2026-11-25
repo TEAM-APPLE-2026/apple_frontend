@@ -13,6 +13,7 @@ export default function Hero() {
   const [text, setText] = useState('')
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- 기존 인트로 애니메이션 동작 유지 (TODO: 프론트 확인)
       setText(WORD)
       return
     }
