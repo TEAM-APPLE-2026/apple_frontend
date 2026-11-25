@@ -1,5 +1,3 @@
-// 출처: backend main, 직접 수정 금지(백엔드에서 바뀌면 다시 복사)
-// (TEAM-APPLE-2026/backend main: src/data/client.mjs)
 // Only known API projection keys are transformed. AI fields and opaque payloads are preserved.
 const projectionKeys = {"is_finalized":"isFinalized","group_id": "groupId", "harm_type": "harmType", "sub_status": "subStatus", "member_count": "memberCount", "period_start": "periodStart", "period_end": "periodEnd", "required_evidence": "requiredEvidence", "proposal_deadline": "proposalDeadline", "selected_firm_name": "selectedFirmName", "is_rep": "isRep", "joined_at": "joinedAt", "left_at": "leftAt", "firm_name": "firmName", "approval_status": "approvalStatus", "biz_status": "bizStatus", "reject_reason": "rejectReason", "retainer_fee": "retainerFee", "success_fee_pct": "successFeePct", "lawyer_count": "lawyerCount", "lead_lawyer": "leadLawyer", "submitted_at": "submittedAt", "updated_at": "updatedAt", "created_at": "createdAt", "next_cursor": "nextCursor", "damage_level": "damageLevel", "secondary_yes_count": "secondaryYesCount", "secondary_known_count": "secondaryKnownCount", "secondary_unknown_count": "secondaryUnknownCount", "secondary_ratio": "secondaryRatio", "evidence_holder_count": "evidenceHolderCount", "evidence_ratio": "evidenceRatio", "as_of": "asOf", "poll_id": "pollId", "opens_at": "opensAt", "closes_at": "closesAt", "server_time": "serverTime", "total_votes": "totalVotes", "option_id": "optionId", "vote_count": "voteCount", "my_option_id": "myOptionId", "winner_option_id": "winnerOptionId", "applied_at": "appliedAt", "my_proposal_id": "myProposalId", "my_vote_count": "myVoteCount", "consent_id": "consentId", "granted_at": "grantedAt", "revoked_at": "revokedAt", "real_name": "realName", "requires_reconsent": "requiresReconsent", "notice_id": "noticeId", "read_at": "readAt", "notification_id": "notificationId", "firm_id": "firmId"};
 function projection(value) {
@@ -48,6 +46,27 @@ export function createBackendClient(supabase) {
     if (error) return mapError(error);
     return { data: convert(data) };
   };
+  // Edge Function call with the same {data}/{error} normalization. The SDK attaches the user's access token.
+  const invoke = async (name, body) => {
+    if (typeof supabase.auth?.getSession === 'function') {
+      const session = await supabase.auth.getSession();
+      if (session.error) return mapError(session.error);
+      if (!session.data?.session) return failure('AUTH_REQUIRED');
+    }
+    const { data, error } = await supabase.functions.invoke(name, { body });
+    if (error) {
+      if (error.name === 'FunctionsFetchError' || error.name === 'FunctionsRelayError') return failure('NETWORK_ERROR');
+      let code;
+      try { code = (await error.context?.json?.())?.error?.code; } catch { code = undefined; }
+      if (Object.hasOwn(messages, code)) return failure(code);
+      return failure(error.context?.status === 401 ? 'AUTH_REQUIRED' : 'INTERNAL_ERROR');
+    }
+    if (data?.error) return failure(Object.hasOwn(messages, data.error.code) ? data.error.code : 'INTERNAL_ERROR');
+    return { data: data?.data };
+  };
+  const evidenceView = data => ({ evidenceId: data.evidence_id, reportId: data.report_id, kind: data.kind,
+    bucketId: data.bucket_id, objectPath: data.object_path, originalName: data.original_name, mimeType: data.mime_type,
+    sizeBytes: data.size_bytes, status: data.status, createdAt: data.created_at, uploadedAt: data.uploaded_at });
   const reportReceipt = data => ({ reportId: data.report_id, status: data.status,
     updatedAt: data.updated_at, ...(Object.hasOwn(data, 'finalized_at') ? { finalizedAt: data.finalized_at } : {}) });
   return {
@@ -115,5 +134,19 @@ export function createBackendClient(supabase) {
     listGroupEvents: (input = {}) => run(() => rpc('list_group_events', {group_id: input.groupId ?? null, cursor: input.cursor ?? null, limit: input.limit ?? 20}, projection, false)),
     listNotifications: (input = {}) => run(() => rpc('list_notifications', {cursor: input.cursor ?? null, limit: input.limit ?? 20}, projection, false)),
     markNotificationRead: (input = {}) => run(() => rpc('mark_notification_read', {notification_id: input.notificationId ?? null}, projection, false)),
+    // Evidence upload: 1) createEvidenceUpload → 2) storage upload to objectPath (upsert:false) → 3) confirmEvidence.
+    createEvidenceUpload: (input = {}) => run(() => rpc('create_evidence_upload', {report_id: input.reportId ?? null, kind: input.kind ?? null, original_name: input.originalName ?? null, mime_type: input.mimeType ?? null, size_bytes: input.sizeBytes ?? null}, evidenceView, false)),
+    confirmEvidence: (input = {}) => run(() => invoke('evidence-confirm', {evidenceId: input.evidenceId ?? null})),
+    // Row first, then the object. objectRemoved=false means the file is orphaned; retry remove(objectPath) later.
+    deleteEvidence: (input = {}) => run(async () => {
+      const result = await rpc('delete_evidence', {evidence_id: input.evidenceId ?? null}, data => data, false);
+      if (result.error) return result;
+      const {evidence_id: evidenceId, bucket_id: bucketId, object_path: objectPath, deleted_at: deletedAt} = result.data;
+      let objectRemoved = false;
+      try { objectRemoved = !(await supabase.storage.from(bucketId).remove([objectPath])).error; } catch { objectRemoved = false; }
+      return {data: {evidenceId, deletedAt, objectPath, objectRemoved}};
+    }),
+    // biz_no is read from the DB by the server; firmId/bizNo are optional consistency checks only.
+    verifyBusiness: (input = {}) => run(() => invoke('nts-verify', {...(input.firmId === undefined ? {} : {firmId: input.firmId}), ...(input.bizNo === undefined ? {} : {bizNo: input.bizNo})})),
   };
 }

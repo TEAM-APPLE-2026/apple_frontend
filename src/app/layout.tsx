@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Noto_Sans_KR, Poppins } from "next/font/google";
+import SessionProvider from "@/features/auth/SessionProvider";
 import "./tokens.css";
 import "./globals.css";
 
@@ -29,7 +30,7 @@ type RootLayoutProps = Readonly<{
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko" className={`${notoSansKr.variable} ${poppins.variable}`}>
-      <body>{children}</body>
+      <body><SessionProvider>{children}</SessionProvider></body>
     </html>
   );
 }

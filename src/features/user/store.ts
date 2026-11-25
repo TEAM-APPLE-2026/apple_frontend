@@ -19,6 +19,7 @@ export const useUserState = store.useStore
 const add = (list: string[], id: string) => (list.includes(id) ? list : [...list, id])
 
 export const userActions = {
+  loginReal: () => store.set(() => ({ loggedIn: true, joined: [] })),
   login: () => store.set((s) => ({ loggedIn: true, joined: s.joined.reduce(add, DEMO_JOINED) })),
   join: (id: string) => store.set((s) => ({ loggedIn: true, joined: add(s.joined, id) })),
   createGroup: () => store.set((s) => ({ loggedIn: true, joined: add(s.joined, 'new') })),
