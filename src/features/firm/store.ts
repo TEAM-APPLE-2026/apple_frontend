@@ -72,7 +72,8 @@ const NEXT: Record<ProposalStatus, ProposalStatus> = { submitted: 'voting', voti
 
 export const firmActions = {
   showToast: (toast: string) => { load(); set({ toast }) },
-  login: (toast: string) => { load(); set({ loggedIn: true, toast }) },
+  /** 실제로 로그아웃 → 로그인으로 바뀔 때만 알림. 세션 새로고침(사업자 조회 등)마다 다시 뜨지 않게 한다. */
+  login: (toast: string) => { load(); if (!state.loggedIn) set({ loggedIn: true, toast }) },
   clearToast: () => set({ toast: null }),
   /** [시연] 투표 중이던 그룹을 공동소송으로 확정 (F-01 → F-02) */
   closeVote: () => set({ lawsuitGroups: [...new Set([...state.lawsuitGroups, VOTING_GROUP_ID])] }),

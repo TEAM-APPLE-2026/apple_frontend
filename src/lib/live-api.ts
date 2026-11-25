@@ -2,7 +2,8 @@ import { backend } from '@/lib/backend'
 
 export type ApiResult<T> = { data: T; error?: never } | { error: { code: string; message: string }; data?: never }
 export type Profile = { profile: { id: string; role: 'user' | 'firm'; nickname: string }; firm: Firm | null }
-export type Firm = { id: string; firmName: string; approvalStatus: string; bizStatus: string }
+export type Firm = { id: string; firmName: string; repName: string | null; openDate: string | null; approvalStatus: string; bizStatus: string; bizValid: string; rejectReason: string | null }
+export type BusinessCheck = { firmId: string; bizStatus: string; bizValid: string; approvalStatus: string }
 export type Group = { id: string; name: string; company: string; harmType: 'privacy_leak'; description: string; conditions: string; status: string; subStatus: string; memberCount: number; periodStart: string | null; periodEnd: string | null; requiredEvidence: string[] }
 export type Page<T> = { items: T[]; nextCursor: string | null }
 export type Receipt = { reportId: string; status: string }
