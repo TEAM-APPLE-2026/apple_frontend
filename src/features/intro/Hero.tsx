@@ -13,8 +13,8 @@ export default function Hero() {
   const [text, setText] = useState('')
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setText(WORD)
-      return
+      const id = window.setTimeout(() => setText(WORD), 0)
+      return () => window.clearTimeout(id)
     }
     let timer = 0
     const wait = (fn: () => void, ms: number) => { timer = window.setTimeout(fn, ms) }
