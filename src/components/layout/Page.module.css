@@ -17,7 +17,7 @@
 .filter { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; color: var(--muted); }
 .select {
   appearance: none; min-width: 150px; height: 42px; padding: 0 36px 0 12px;
-  background: var(--input-bg) url(/icons/chevron-down.svg) no-repeat right 13px center / 14px 14px;
+  background: var(--input-bg) url(../../../public/icons/chevron-down.svg) no-repeat right 13px center / 14px 14px;
   border: 1px solid var(--surface-line); border-radius: 8px;
   color: var(--text); font: inherit; font-size: 14px; font-weight: 400; letter-spacing: -0.01em; cursor: pointer;
 }

@@ -17,12 +17,14 @@ export type IconName =
   | 'spinner' | 'alert-lg' | 'search-lg' | 'done-check' | 'modal-x'
   | 'vote-check' | 'vote-alert' | 'compare-chevron' | 'compare-arrow' | 'tab-lock' | 'lock-lg'
 
+import { withBasePath } from "@/lib/basePath"
+
 type Props = { name: IconName; size?: number; className?: string }
 
 export default function Icon({ name, size = 24, className }: Props) {
   return (
     <img
-      src={`/icons/${name}.svg`}
+      src={withBasePath(`/icons/${name}.svg`)}
       width={size}
       height={size}
       alt=""

@@ -17,7 +17,7 @@
 .filter { display: flex; flex-direction: column; gap: 8px; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; color: var(--muted); }
 .select {
   appearance: none; min-width: 150px; height: 40px; padding: 0 38px 0 16px;
-  background: var(--input-bg) url(/icons/chevron-down.svg) no-repeat right 14px center / 14px 14px;
+  background: var(--input-bg) url(../../../public/icons/chevron-down.svg) no-repeat right 14px center / 14px 14px;
   border: 1px solid var(--white-22); border-radius: 20px;
   color: var(--text); font: inherit; font-size: 14px; font-weight: 400; letter-spacing: -0.01em; cursor: pointer;
 }
@@ -46,8 +46,8 @@
 
 .dots { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 3px; width: 100%; min-height: 30px; }
 .dot, .dotEmpty { width: 6px; height: 6px; background: center / 6px 6px no-repeat; }
-.dot { background-image: url(/icons/dot.svg); }
-.dotEmpty { background-image: url(/icons/dot-empty.svg); }
+.dot { background-image: url(../../../public/icons/dot.svg); }
+.dotEmpty { background-image: url(../../../public/icons/dot-empty.svg); }
 
 .dates { display: flex; flex-direction: column; gap: 4px; width: 100%; margin: auto 0 0; padding-top: 12px; border-top: 1px solid var(--line); font-size: 14px; letter-spacing: -0.01em; color: var(--muted); }
 .dates div { display: flex; justify-content: space-between; gap: 12px; }
