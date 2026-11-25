@@ -40,3 +40,7 @@ src/
 3. 기능 단위로 작게 커밋하고 Pull Request를 생성합니다.
 4. PR 전 `npm run lint`, `npm run typecheck`, `npm run build`를 실행합니다.
 5. 리뷰와 검증을 마친 뒤 `main`에 병합합니다.
+
+## 개발 Supabase 연결
+
+실제 개발 DB 연결을 확인하는 `/dev/backend` 화면과 [설정·검증 범위](docs/development-backend.md)를 추가했습니다. 기존 제품 화면은 아직 시연 데이터를 사용합니다. `.env.example`을 참고하고 공개 키만 설정하세요.
