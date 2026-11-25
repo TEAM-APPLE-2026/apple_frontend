@@ -2,7 +2,7 @@
 // hande-ai 버전을 올리면 이 파일도 함께 확인할 것.
 declare module "@team-apple/hande-ai" {
   export type FieldKey = "company" | "type" | "notice_date" | "leaked" | "secondary" | "card" | "secondary_detail";
-  export type FieldValue = string | string[] | { from: string; to: string; precision: "day" | "month" | "year" };
+  export type FieldValue = string | string[] | { from: string | null; to: string | null; precision: "day" | "month" | "year" | "unknown" };
   export type ReportField = {
     key: FieldKey;
     aiValue: FieldValue | null;
