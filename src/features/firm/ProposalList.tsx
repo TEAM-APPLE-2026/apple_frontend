@@ -7,6 +7,7 @@ import { findGroup } from './data'
 import { firmActions, useFirmState, type ProposalStatus } from './store'
 import s from '@/components/layout/Page.module.css'
 import l from './ProposalList.module.css'
+import { routes } from '@/lib/routes'
 
 const STATUS: Record<ProposalStatus, { label: string; tone: BadgeTone }> = {
   submitted: { label: '제출됨', tone: 'line' },
@@ -57,7 +58,7 @@ export default function ProposalList() {
                     {p.status !== 'selected' && (
                       <>
                         <button className={l.demo} onClick={() => firmActions.advanceProposal(p.groupId)}>[시연] 다음 상태</button>
-                        <Button href={`/firm/groups/${p.groupId}`} variant="chip" size="sm">그룹 보기</Button>
+                        <Button href={routes.firmGroupView(p.groupId)} variant="chip" size="sm">그룹 보기</Button>
                       </>
                     )}
                   </td>

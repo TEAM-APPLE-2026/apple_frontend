@@ -7,6 +7,7 @@ import Icon from '@/components/common/Icon'
 import { FIRM_GROUPS, HARM_TYPES, VOTING_GROUP_ID, findGroup, formatDeadline } from './data'
 import { firmActions, useFirmState } from './store'
 import s from '@/components/layout/Page.module.css'
+import { routes } from '@/lib/routes'
 
 const SORTS = { deadline: '제안 마감 빠른 순', members: '참여 많은 순', share: '득표 높은 순' } as const
 type SortKey = keyof typeof SORTS
@@ -67,7 +68,7 @@ export default function GroupExplorer() {
               const mine = submitted(g.id)
               return (
                 <tr key={g.id}>
-                  <th scope="row" className={s.groupName}><Link href={`/firm/groups/${g.id}`}>{g.title}</Link></th>
+                  <th scope="row" className={s.groupName}><Link href={routes.firmGroupView(g.id)}>{g.title}</Link></th>
                   <td>{g.harm}</td>
                   <td className={s.right}>{g.members.toLocaleString()}명</td>
                   <td className={s.right}>{g.secondary.toLocaleString()}명</td>
@@ -82,7 +83,7 @@ export default function GroupExplorer() {
                   <td className={s.action}>
                     {mine
                       ? <Button href="/firm/proposals" variant="chip" size="sm">제출함</Button>
-                      : <Button href={`/firm/groups/${g.id}/proposal`} size="sm">제안서 작성</Button>}
+                      : <Button href={routes.firmGroupProposal(g.id)} size="sm">제안서 작성</Button>}
                   </td>
                 </tr>
               )

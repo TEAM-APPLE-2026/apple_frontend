@@ -13,6 +13,7 @@ import { MY_GROUPS } from '@/features/groups/data'
 import { groupActions } from '@/features/groups/store'
 import { userActions, useUserState } from '@/features/user/store'
 import s from './UserShell.module.css'
+import { routes } from '@/lib/routes'
 
 const NAV: { to: string; label: string; icon: IconName; end?: boolean }[] = [
   { to: '/home', label: '홈', icon: 'nav-home', end: true },
@@ -95,7 +96,7 @@ export default function UserShell({ children }: { children: ReactNode }) {
           <div className={s.mine}>
             <p className={s.mineTitle}>참여 중인 그룹</p>
             {myGroups.map((g) => (
-              <Link key={g.id} href={`/groups/${g.id}`} className={s.mineItem}>{g.title}</Link>
+              <Link key={g.id} href={routes.groupView(g.id)} className={s.mineItem}>{g.title}</Link>
             ))}
           </div>
         )}

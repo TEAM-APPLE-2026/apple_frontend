@@ -13,6 +13,7 @@ import stateBox from '@/components/common/StateBox.module.css'
 import { EVIDENCE, EXAMPLE_FIELDS, EXAMPLE_TEXT, MATCH, MATCH_KEYWORD, MIN_TEXT, type ReportField } from './data'
 import Stepper from './Stepper'
 import s from './ReportFlow.module.css'
+import { routes } from '@/lib/routes'
 
 type Step = 'write' | 'analyzing' | 'failed' | 'review' | 'match' | 'nomatch' | 'newGroup' | 'done'
 
@@ -69,7 +70,7 @@ export default function ReportFlow() {
         <p className={p.sub}>정리한 내용으로 새 그룹을 만들었어요. 링크를 공유해서 함께할 사람을 모아 주세요. 10명이 모이면 대표자를 정해요.</p>
         <div className={p.actions}>
           <Button href="/groups" variant="chip">내 그룹 보기</Button>
-          <Button href="/groups/new">그룹 대시보드로</Button>
+          <Button href={routes.groupView('new')}>그룹 대시보드로</Button>
         </div>
       </div>
     )
@@ -202,7 +203,7 @@ export default function ReportFlow() {
           </div>
           <div className={p.actions}>
             <button className={s.strongLink} onClick={() => go('newGroup')}>내 경우와 달라요 · 새 그룹 만들기</button>
-            <Button href={`/cases/${MATCH.id}`} arrow>이 사건 자세히 보기</Button>
+            <Button href={routes.caseView(MATCH.id)} arrow>이 사건 자세히 보기</Button>
           </div>
         </>
       )}

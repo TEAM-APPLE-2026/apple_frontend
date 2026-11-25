@@ -1,19 +1,17 @@
+'use client'
+
 import type { ReactNode } from 'react'
-import { notFound } from 'next/navigation'
+import { notFound, useSearchParams } from 'next/navigation'
 import Badge from '@/components/common/Badge'
 import BackLink from '@/components/common/BackLink'
 import CaseActions from '@/features/cases/CaseActions'
-import { CASES, STAGES, STATUS, findCase, formatCount } from '@/features/cases/data'
+import { STAGES, STATUS, findCase, formatCount } from '@/features/cases/data'
 import p from '@/components/layout/Page.module.css'
 import s from '@/features/cases/CaseDetail.module.css'
 
-export function generateStaticParams() {
-  return CASES.map((c) => ({ id: c.id }))
-}
-
-// U-16 ~ U-20 사건 자세히 보기
-export default async function CaseDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+// U-16 ~ U-20 사건 자세히 보기 (/cases/view?id=)
+export default function CaseView() {
+  const id = useSearchParams().get('id') ?? ''
   const c = findCase(id)
   if (!c) notFound()
 

@@ -8,6 +8,7 @@ import p from '@/components/layout/Page.module.css'
 import { userActions, useUserState } from '@/features/user/store'
 import { DEMO_CASE_ID, type Case } from './data'
 import s from './CaseDetail.module.css'
+import { routes } from '@/lib/routes'
 
 // U-16 로그인 전 · U-17 로그인 필요(확인창) · U-18 참여 중 · U-19 다른 예시 사건 · U-20 종결 사건
 export default function CaseActions({ c, result }: { c: Pick<Case, 'id' | 'status'>; result?: string }) {
@@ -31,7 +32,7 @@ export default function CaseActions({ c, result }: { c: Pick<Case, 'id' | 'statu
       <div className={`${p.actions} ${s.noteActions}`}>
         {back}
         <p className={s.note}>
-          시연에서는 대표 예시 사건만 참여할 수 있어요. <Link href={`/cases/${DEMO_CASE_ID}`}>대표 사건 보기</Link>
+          시연에서는 대표 예시 사건만 참여할 수 있어요. <Link href={routes.caseView(DEMO_CASE_ID)}>대표 사건 보기</Link>
         </p>
       </div>
     )
@@ -42,7 +43,7 @@ export default function CaseActions({ c, result }: { c: Pick<Case, 'id' | 'statu
     <div className={p.actions}>
       {back}
       {isJoined
-        ? <Button href={`/groups/${c.id}`}>참여 중 · 대시보드 보기</Button>
+        ? <Button href={routes.groupView(c.id)}>참여 중 · 대시보드 보기</Button>
         : loggedIn
           ? <Button onClick={() => userActions.join(c.id)}>참여하기</Button>
           : <Button onClick={() => setAskLogin(true)}>로그인하고 참여하기</Button>}

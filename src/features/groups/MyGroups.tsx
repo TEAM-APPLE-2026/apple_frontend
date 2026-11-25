@@ -9,6 +9,7 @@ import { useUserState } from '@/features/user/store'
 import { MY_GROUPS, type MyGroup } from './data'
 import { useGroupState, type Phase } from './store'
 import s from './MyGroups.module.css'
+import { routes } from '@/lib/routes'
 
 // 대표 예시 그룹은 대시보드 진행 단계에 맞춰 상태 · 할 일이 바뀜
 function withPhase(g: MyGroup, phase: Phase, votedMethod: boolean, votedFirm: boolean): MyGroup {
@@ -42,7 +43,7 @@ export default function MyGroups() {
     <ul className={s.list}>
       {groups.map((g) => (
         <li key={g.id}>
-          <Link href={`/groups/${g.id}`} className={s.card}>
+          <Link href={routes.groupView(g.id)} className={s.card}>
             <span className={s.top}>
               <Badge tone={g.badge.tone}>{g.badge.label}</Badge>
               <span className={s.go}>대시보드 보기 <Icon name="card-arrow" size={16} /></span>

@@ -9,6 +9,7 @@ import Icon from '@/components/common/Icon'
 import { dotCounts } from '@/features/intro/CasesSection'
 import { CASES, HARMS, STATUS, type CaseStatus } from './data'
 import s from './CaseList.module.css'
+import { routes } from '@/lib/routes'
 
 const SORTS = { members: '참여 많은 순', recent: '최근 개설 순', deadline: '마감 임박 순' } as const
 type SortKey = keyof typeof SORTS
@@ -88,7 +89,7 @@ export default function CaseList() {
                     <span className={s.category}>{c.harm}</span>
                     <Badge tone={STATUS[c.status].tone}>{STATUS[c.status].label}</Badge>
                   </div>
-                  <h2 id={`case-${c.id}`} className={s.title}><Link href={`/cases/${c.id}`}>{c.title}</Link></h2>
+                  <h2 id={`case-${c.id}`} className={s.title}><Link href={routes.caseView(c.id)}>{c.title}</Link></h2>
                   <div className={s.cntBox}>
                     <p className={s.count}>
                       <span className={`num ${s.countNum}`}>{c.count.toLocaleString()}</span>명
@@ -104,7 +105,7 @@ export default function CaseList() {
                     <div><dt>모집 마감</dt><dd className="num">{c.deadline}</dd></div>
                     <div><dt>개설일</dt><dd className="num">{c.created}</dd></div>
                   </dl>
-                  <Link href={`/cases/${c.id}`} className={s.go}>
+                  <Link href={routes.caseView(c.id)} className={s.go}>
                     보기
                     <Icon name="card-arrow" size={16} />
                   </Link>
