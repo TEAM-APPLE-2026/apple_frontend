@@ -1,5 +1,6 @@
 // 백엔드 연결 진입점. 화면에서는 `import { backend } from "@/lib/backend"`로만 사용한다.
 // client.mjs는 backend 레포에서 복사한 파일이라 직접 수정하지 않는다.
+// (출처: backend feature/firm-auto-verify src/data/client.mjs. 예외: 회원가입 오류 문구 5종은 프론트 d362863에서 추가 — backend 반영 전까지 유지)
 import { createBackendClient } from "./client.mjs";
 import { getSupabase } from "@/lib/supabase";
 
