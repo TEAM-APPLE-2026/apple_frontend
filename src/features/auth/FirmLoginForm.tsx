@@ -17,7 +17,7 @@ export default function FirmLoginForm(){
    const p=await call<Profile>('getMyProfile')
    if(p.profile.role!=='firm'){await call('signOut');throw new Error('로펌 계정으로 로그인해 주세요.')}
    await refresh();router.push('/firm/profile')
-  }catch(error){if(error instanceof BackendError&&error.code==='PROFILE_INCOMPLETE'){router.push('/signup');return}setMessage(error instanceof Error?error.message:'로그인하지 못했습니다.')}
+  }catch(error){if(error instanceof BackendError&&error.code==='PROFILE_INCOMPLETE'){router.push('/signup?role=firm');return}setMessage(error instanceof Error?error.message:'로그인하지 못했습니다.')}
   finally{setBusy(false)}
  }
  return <form className={s.form} onSubmit={submit}>
