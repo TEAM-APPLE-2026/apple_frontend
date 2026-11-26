@@ -1,18 +1,16 @@
-import { notFound } from 'next/navigation'
+'use client'
+
+import { notFound, useSearchParams } from 'next/navigation'
 import type { ReactNode } from 'react'
 import BackLink from '@/components/common/BackLink'
 import Icon from '@/components/common/Icon'
 import GroupActions from '@/features/firm/GroupActions'
-import { FIRM_GROUPS, findGroup, formatDeadline } from '@/features/firm/data'
+import { findGroup, formatDeadline } from '@/features/firm/data'
 import s from '@/components/layout/Page.module.css'
 
-export function generateStaticParams() {
-  return FIRM_GROUPS.map((g) => ({ id: g.id }))
-}
-
-// F-04 그룹 보기 · 익명 집계
-export default async function FirmGroupPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+// F-04 그룹 보기 · 익명 집계 (/firm/groups/view?id=)
+export default function FirmGroupView() {
+  const id = useSearchParams().get('id') ?? ''
   const g = findGroup(id)
   if (!g) notFound()
 

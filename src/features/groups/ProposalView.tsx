@@ -10,6 +10,7 @@ import { FIRMS, FIRM_WINNER, GROUP, type FirmId } from './dashboardData'
 import { Tag, VoteButton } from './parts'
 import { firmVotes, groupActions, useGroupState } from './store'
 import s from './Dashboard.module.css'
+import { routes } from '@/lib/routes'
 
 // U-32 수임 제안서 읽기 (피해자 시점) · U-35 마감 후 (선정 / 선정되지 않음)
 export default function ProposalView({ groupId, firmId }: { groupId: string; firmId: FirmId }) {
@@ -18,7 +19,7 @@ export default function ProposalView({ groupId, firmId }: { groupId: string; fir
   const f = FIRMS[firmId]
   const closed = phase === 'selected'
   const won = firmId === FIRM_WINNER
-  const compareHref = `/groups/${groupId}?tab=firms`
+  const compareHref = routes.groupView(groupId, 'firms')
 
   const rows: [string, string][] = [
     ['착수금', f.fee],

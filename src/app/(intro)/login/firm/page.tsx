@@ -14,7 +14,7 @@ export default function FirmLoginPage() {
       <h1 className={s.title}>로펌 로그인</h1>
       <p className={s.sub}>사업자 확인을 마친 로펌만 공동소송 그룹에 수임 제안서를 보낼 수 있습니다.</p>
       <FirmLoginForm />
-      <p className={s.demo}>시연용입니다. 실제 국세청 조회는 하지 않습니다. 비밀번호에 wrong을 넣으면 로그인 실패 화면을 볼 수 있습니다.</p>
+      <p className={s.alt}><Link href="/signup?role=firm">계정·프로필 등록</Link></p>
       <p className={s.alt}>일반 사용자이신가요? <Link href="/login">일반 사용자 로그인</Link></p>
     </div>
   )

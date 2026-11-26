@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { withBasePath } from '@/lib/basePath'
 import Logo from '../common/Logo'
 import Button from '../common/Button'
 import Icon from '../common/Icon'
@@ -21,7 +22,7 @@ const NAV: { hash?: string; to?: string; label: string; num?: boolean }[] = [
 export default function IntroHeader() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
-  const anchor = (hash: string) => (pathname === '/' ? `#${hash}` : `/#${hash}`)
+  const anchor = (hash: string) => (pathname === '/' ? `#${hash}` : withBasePath(`/#${hash}`))
 
   // 경로가 바뀌면 메뉴 닫기 (렌더 중 상태 조정 패턴)
   const [lastPath, setLastPath] = useState(pathname)

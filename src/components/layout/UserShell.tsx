@@ -8,11 +8,13 @@ import Logo from '../common/Logo'
 import IntroHeader from './IntroHeader'
 import FluidBackground from '../common/FluidBackground'
 import SearchBox from '../common/SearchBox'
-import { currentUser } from '@/lib/mock'
+import { useSession } from '@/features/auth/SessionProvider'
+import { call } from '@/lib/live-api'
 import { MY_GROUPS } from '@/features/groups/data'
 import { groupActions } from '@/features/groups/store'
 import { userActions, useUserState } from '@/features/user/store'
 import s from './UserShell.module.css'
+import { routes } from '@/lib/routes'
 
 const NAV: { to: string; label: string; icon: IconName; end?: boolean }[] = [
   { to: '/home', label: '홈', icon: 'nav-home', end: true },
@@ -28,23 +30,27 @@ function isNavActive(pathname: string, to: string, end?: boolean) {
 
 // 로그인 전에는 로그인 링크, 로그인 후에는 닉네임 · 로그아웃
 function Account({ loggedIn }: { loggedIn: boolean }) {
+  const {profile} = useSession()
   if (!loggedIn) return <Link href="/login" className={s.name}>로그인</Link>
   return (
     <>
-      <span className={s.name}>{currentUser.nickname} 님</span>
+      <span className={s.name}>{profile?.profile.nickname ?? '회원'} 님</span>
       <Link href="/" className={s.logout} onClick={logout}>로그아웃</Link>
     </>
   )
 }
 
-const logout = () => {
+const logout = async () => {
+  await call('signOut')
   userActions.logout()
   groupActions.reset()
 }
 
 export default function UserShell({ children }: { children: ReactNode }) {
   const pathname = usePathname()
-  const { loggedIn, joined } = useUserState()
+  const { joined } = useUserState()
+  const { profile } = useSession()
+  const loggedIn = profile?.profile.role === 'user'
   const myGroups = loggedIn ? MY_GROUPS.filter((g) => joined.includes(g.id)) : []
   // 홈 · 로고: 로그인 전에는 HANDE 소개 홈(/), 로그인 후에는 내 홈(/home)
   const homeHref = loggedIn ? '/home' : '/'
@@ -95,7 +101,7 @@ export default function UserShell({ children }: { children: ReactNode }) {
           <div className={s.mine}>
             <p className={s.mineTitle}>참여 중인 그룹</p>
             {myGroups.map((g) => (
-              <Link key={g.id} href={`/groups/${g.id}`} className={s.mineItem}>{g.title}</Link>
+              <Link key={g.id} href={routes.groupView(g.id)} className={s.mineItem}>{g.title}</Link>
             ))}
           </div>
         )}

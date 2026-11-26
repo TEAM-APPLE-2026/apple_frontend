@@ -38,8 +38,8 @@
 
 .dots { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 3px; width: 100%; min-height: 30px; }
 .dot, .dotEmpty { width: 6px; height: 6px; background: center / 6px 6px no-repeat; }
-.dot { background-image: url(/icons/dot.svg); }
-.dotEmpty { background-image: url(/icons/dot-empty.svg); }
+.dot { background-image: url(../../../public/icons/dot.svg); }
+.dotEmpty { background-image: url(../../../public/icons/dot-empty.svg); }
 
 .status { width: 100%; padding-top: 12px; border-top: 1px solid var(--line); font-size: 14px; letter-spacing: -0.01em; color: var(--muted); }
 .go { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; letter-spacing: -0.01em; color: var(--neon); }

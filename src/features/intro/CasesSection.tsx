@@ -7,6 +7,7 @@ import Icon from '@/components/common/Icon'
 import { Num, SectionHead } from './Sections'
 import { CASES, type CaseCard } from './data'
 import s from './CasesSection.module.css'
+import { routes } from '@/lib/routes'
 
 // 점 1개 = 1명 · 500명이 넘으면 점 1개 = 5명 · 빈 점은 목표까지 남은 인원
 export function dotCounts({ count, goal }: { count: number; goal?: number }) {
@@ -37,7 +38,7 @@ function Card({ c }: { c: CaseCard }) {
         {Array.from({ length: empty }, (_, i) => <span key={`e${i}`} className={s.dotEmpty} />)}
       </div>
       <p className={s.status}>{c.status}</p>
-      <Link href={`/cases/${c.id}`} className={s.go}>
+      <Link href={routes.caseView(c.id)} className={s.go}>
         그룹 보기
         <Icon name="card-arrow" size={16} />
       </Link>

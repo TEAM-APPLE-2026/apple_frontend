@@ -6,7 +6,8 @@ import { usePathname } from 'next/navigation'
 import Icon, { type IconName } from '../common/Icon'
 import Logo from '../common/Logo'
 import Toast from '../common/Toast'
-import { FIRM } from '@/features/firm/data'
+import {useSession} from '@/features/auth/SessionProvider'
+import {call} from '@/lib/live-api'
 import { firmActions, useFirmState } from '@/features/firm/store'
 import s from './UserShell.module.css'
 import f from './FirmShell.module.css'
@@ -35,18 +36,21 @@ export function FirmTag() {
 }
 
 function Account({ loggedIn }: { loggedIn: boolean }) {
+ const {profile}=useSession()
   if (!loggedIn) return <Link href="/login/firm" className={s.name}>로펌 로그인</Link>
   return (
     <>
-      <span className={s.name}>{FIRM.name}</span>
-      <Link href="/" className={s.logout} onClick={firmActions.reset}>로그아웃</Link>
+      <span className={s.name}>{profile?.firm?.firmName ?? profile?.profile.nickname ?? '로펌'}</span>
+      <Link href="/" className={s.logout} onClick={()=>{void call('signOut').then(()=>firmActions.reset())}}>로그아웃</Link>
     </>
   )
 }
 
 export default function FirmShell({ children }: { children: ReactNode }) {
   const pathname = usePathname()
-  const { toast, loggedIn } = useFirmState()
+  const { toast } = useFirmState()
+  const {profile}=useSession()
+  const loggedIn=profile?.profile.role==='firm'
   const [open, setOpen] = useState(false)
   const clearToast = useCallback(() => firmActions.clearToast(), [])
 

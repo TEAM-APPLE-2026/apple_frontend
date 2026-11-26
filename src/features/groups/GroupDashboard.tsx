@@ -12,6 +12,7 @@ import { FIRMS, FIRM_IDS, FIRM_WINNER, GROUP, KPIS, METHODS, METHOD_WINNER, MILE
 import { Callout, Kpi, KvBox, Meter, Milestones, ProposalCard, Stages, Tag, VoteButton, proposalHref } from './parts'
 import { firmVotes, groupActions, methodVotes, useGroupState, type Phase } from './store'
 import s from './Dashboard.module.css'
+import { routes } from '@/lib/routes'
 
 type TabId = 'overview' | 'method' | 'firms' | 'news' | 'people'
 
@@ -69,7 +70,7 @@ export default function GroupDashboard({ groupId }: { groupId: string }) {
   const [tab, setTabState] = useState<TabId>(() => (params.get('tab') as TabId) || 'overview')
   const setTab = (t: string) => {
     setTabState(t as TabId)
-    router.replace(`/groups/${groupId}${t === 'overview' ? '' : `?tab=${t}`}`, { scroll: false })
+    router.replace(routes.groupView(groupId, t === 'overview' ? undefined : t), { scroll: false })
   }
   const showToast = useCallback((msg: string | null) => groupActions.toast(msg), [])
   const copy = useCopyLink(showToast)

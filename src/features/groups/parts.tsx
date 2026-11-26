@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import Button from '@/components/common/Button'
 import { STAGE_NAMES, type Firm, type FirmId } from './dashboardData'
 import s from './Dashboard.module.css'
+import { routes } from '@/lib/routes'
 
 // Figma 🧩 Tag — tone: Blue(추천 · 새로 도착) | Neon(투표로 결정 · 선정) | Mine(내 투표)
 export function Tag({ tone = 'blue', children }: { tone?: 'blue' | 'neon' | 'mine'; children: string }) {
@@ -79,7 +80,7 @@ export function Milestones({ rows }: { rows: { label: string; value: string }[] 
   )
 }
 
-export const proposalHref = (groupId: string, id: FirmId) => `/groups/${groupId}/proposals/${id}`
+export const proposalHref = (groupId: string, id: FirmId) => routes.groupProposal(groupId, id)
 
 // pc: 로펌 수임 제안서 카드 (U-30 · U-31 · U-34)
 export function ProposalCard({ id, firm, groupId, tags, highlight, footer }: {
