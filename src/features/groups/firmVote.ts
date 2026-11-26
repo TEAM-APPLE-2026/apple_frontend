@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { usePollPhase, withClock } from './pollPhase'
 import {
   call, friendlyError, listAll,
   type Group, type Membership, type Notification, type Proposal, type VoteOption, type VoteSummary,
@@ -13,8 +14,9 @@ export type FirmStage =
   | 'not_suit' // 공동소송 그룹이 아님
   | 'collecting' // 제안 접수 중 (마감 전)
   | 'ready' // 제안 마감 지남 · 로펌 투표 열기 전
+  | 'waiting' // 로펌 투표가 열렸지만 시작 시각 전
   | 'voting' // 로펌 투표 중
-  | 'counting' // 마감 시간은 지났고 서버 집계 대기
+  | 'counting' // 마감 시각은 지났고 서버 집계 대기
   | 'retry' // 동점 · 투표 없음 · 취소 → 대표자가 다시 열 수 있음
   | 'selected' // 선정 완료
 
@@ -29,7 +31,7 @@ export type FirmVoteData = {
 async function latestFirmPoll(groupId: string): Promise<VoteSummary | null> {
   const notices = await listAll<Notification>('listNotifications')
   const notice = notices.find((n) => n.groupId === groupId && n.type === 'poll_started' && n.payload.kind === 'firm' && n.payload.poll_id)
-  return notice ? call<VoteSummary>('getVoteSummary', { pollId: notice.payload.poll_id }) : null
+  return notice ? withClock(await call<VoteSummary>('getVoteSummary', { pollId: notice.payload.poll_id })) : null
 }
 
 function stageOf(group: Group, vote: VoteSummary | null): FirmStage {
@@ -37,7 +39,7 @@ function stageOf(group: Group, vote: VoteSummary | null): FirmStage {
   if (group.selectedFirmName || group.subStatus === 'connected') return 'selected'
   if (vote) {
     if (vote.isFinalized) return vote.state === 'closed' ? 'selected' : 'retry'
-    if (new Date(vote.serverTime) >= new Date(vote.closesAt)) return 'counting'
+    // 시작 대기 · 투표 중 · 집계 대기는 시간에 따라 바뀌므로 useFirmStage에서 정한다
     return 'voting'
   }
   const deadline = group.proposalDeadline ? new Date(group.proposalDeadline) : null
@@ -65,6 +67,17 @@ export function useFirmVote(groupId: string) {
 
   useEffect(() => { queueMicrotask(() => void load()) }, [load])
   return { data, error, reload: load }
+}
+
+/**
+ * 화면에 쓸 단계. 진행 중인 로펌 투표는 시작·마감 시각과 현재 시각(30초마다 재계산)으로
+ * 시작 대기(waiting) · 투표 중(voting) · 집계 대기(counting)를 나눈다.
+ */
+export function useFirmStage(data: FirmVoteData | null) {
+  const phase = usePollPhase(data?.vote)
+  if (!data) return { stage: null, phase }
+  if (data.stage !== 'voting') return { stage: data.stage, phase }
+  return { stage: phase === 'waiting' ? 'waiting' : phase === 'closed' ? 'counting' : 'voting', phase } as { stage: FirmStage; phase: typeof phase }
 }
 
 /** 제안서에 해당하는 투표 선택지 (선택지의 proposalId로 연결) */

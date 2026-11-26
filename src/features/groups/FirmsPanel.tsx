@@ -7,8 +7,8 @@ import Field from '@/components/common/Field'
 import Icon from '@/components/common/Icon'
 import Toast from '@/components/common/Toast'
 import { call, friendlyError, formatDateTime, type Action } from '@/lib/live-api'
-import { ProposalCard, Tag, VoteButton, cardOf, proposalHref } from './parts'
-import { RETRY_TEXT, optionOf, useFirmVote, winnerProposalId, type FirmVoteData } from './firmVote'
+import { PollStatus, ProposalCard, Tag, VoteButton, cardOf, proposalHref } from './parts'
+import { RETRY_TEXT, optionOf, useFirmStage, useFirmVote, winnerProposalId, type FirmVoteData } from './firmVote'
 import s from './Dashboard.module.css'
 
 const VOTED = '투표했어요. 마감 전까지 다른 로펌으로 바꿀 수 있어요'
@@ -46,9 +46,13 @@ export default function FirmsPanel({ groupId }: { groupId: string }) {
 }
 
 function Body({ data, runner, open, setOpen }: { data: FirmVoteData; runner: ReturnType<typeof useRunner>; open: boolean; setOpen: (f: (o: boolean) => boolean) => void }) {
-  const { group, proposals, vote, stage, membership } = data
+  const { group, proposals, vote, membership } = data
+  // 시작 대기 · 투표 중 · 집계 대기는 30초마다 다시 계산된다
+  const { stage, phase } = useFirmStage(data)
   const groupId = group.id
   const voting = stage === 'voting'
+  // 투표가 열린 뒤(시작 대기 포함)에는 카드에 투표 버튼을 두고, 누를 수 있는지는 phase로 정한다
+  const ballot = (voting || stage === 'waiting') && !!vote
   const winner = winnerProposalId(vote)
   const mine = vote?.myOptionId ? vote.options.find((o) => o.optionId === vote.myOptionId)?.proposalId ?? null : null
   // 투표가 열렸으면 선택지에 오른 제안서만, 아니면 제출된 제안서 전체를 보여 준다
@@ -72,8 +76,15 @@ function Body({ data, runner, open, setOpen }: { data: FirmVoteData; runner: Ret
       {stage === 'ready' && (
         <p className={s.intro}>제안 접수가 끝났어요. 제안서 <b>{proposals.length}건</b>을 읽어 보세요. 대표자가 로펌 투표를 열면 투표할 수 있어요.</p>
       )}
-      {voting && vote && (
+      {stage === 'waiting' && vote && phase && (
         <>
+          <p className={s.intro}>로펌 투표가 곧 시작돼요. 시작 전에 제안서 <b>{shown.length}건</b>을 미리 읽어 보세요. 시작 시각이 되면 투표 버튼이 열려요.</p>
+          <PollStatus title="로펌 투표" phase={phase} opensAt={vote.opensAt} closesAt={vote.closesAt} />
+        </>
+      )}
+      {voting && vote && phase && (
+        <>
+          <PollStatus title="로펌 투표" phase={phase} opensAt={vote.opensAt} closesAt={vote.closesAt} />
           <p className={s.intro}>
             로펌 <b>{shown.length}곳</b>이 수임 제안서를 보냈어요. 읽어 보고 한 곳에 투표해 주세요. <b>1인 1표 · 비공개</b>이고 {formatDateTime(vote.closesAt)}까지 바꿀 수 있어요.
           </p>
@@ -115,8 +126,8 @@ function Body({ data, runner, open, setOpen }: { data: FirmVoteData; runner: Ret
                 <ProposalCard
                   key={x.id} id={x.id} firm={f} groupId={groupId} tags={tags}
                   highlight={voting && mine === x.id ? 'blue' : win ? 'neon' : undefined}
-                  footer={voting
-                    ? <VoteButton fixed voted={mine === x.id} disabled={runner.busy} onClick={() => void castVote(x.id)}>이 로펌에 투표하기</VoteButton>
+                  footer={ballot
+                    ? <VoteButton fixed phase={phase} voted={mine === x.id} disabled={runner.busy} onClick={() => void castVote(x.id)}>이 로펌에 투표하기</VoteButton>
                     : vote && stage !== 'counting'
                       ? win ? <p className={s.pcVotesWin}><b>{v}표</b> · 선정</p> : <p className={s.pcVotes}>{v}표</p>
                       : <Link href={proposalHref(groupId, x.id)} className={s.cmpRead}>제안서 읽기</Link>}

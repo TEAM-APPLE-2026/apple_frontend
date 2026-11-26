@@ -8,6 +8,8 @@ import {routes} from '@/lib/routes'
 import {useSession} from '@/features/auth/SessionProvider'
 import p from '@/components/layout/Page.module.css'
 import FirmsPanel from '@/features/groups/FirmsPanel'
+import {PollStatus,canVote} from '@/features/groups/parts'
+import {usePollPhase,withClock} from '@/features/groups/pollPhase'
 const phase:Record<string,string>={recruiting:'모집 중',rep_election:'대표자 투표',method_vote:'대응 방법 투표',proposal_collection:'로펌 제안 접수',firm_vote:'로펌 투표',connected:'사건 진행 중',closed:'종결'}
 const methodLabel:Record<string,string>={med:'분쟁조정',consumer:'소비자단체 상담',collective:'공동 대응',suit:'공동소송',representative:'대표자 선정',method:'대응 방법',firm:'로펌 선정'}
 const voteState:Record<string,string>={scheduled:'시작 대기',open:'투표 중',closed:'마감',tied:'동점 · 재투표 필요',no_votes:'투표 없음',cancelled:'취소',completed:'집계 완료'}
@@ -80,11 +82,13 @@ export function GroupDetail({id}:{id:string}){
  </div>
 }
 
-type Vote={pollId:string;kind:string;state:string;closesAt:string;myOptionId:string|null;options:{optionId:string;label:string;voteCount:number}[]}
+type Vote={pollId:string;kind:string;state:string;opensAt:string;closesAt:string;serverTime:string;myOptionId:string|null;options:{optionId:string;label:string;voteCount:number}[]}
 type Notice={groupId:string;type:string;payload:{poll_id?:string;kind?:string}}
 function GroupVoting({groupId}:{groupId:string}){
  const [vote,setVote]=useState<Vote|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false)
  const [opens,setOpens]=useState(''),[closes,setCloses]=useState(''),[kind,setKind]=useState('representative')
+ // 시작 대기 · 투표 중 · 마감 (30초마다 재계산). 투표 버튼은 투표 중에만 눌린다.
+ const phase=usePollPhase(vote)
  const load=useCallback(async()=>{
   try{
    let cursor:string|null=null
@@ -92,7 +96,7 @@ function GroupVoting({groupId}:{groupId:string}){
     const page:Page<Notice>=await call<Page<Notice>>('listNotifications',{cursor,limit:100})
     // 로펌 투표는 아래 로펌 제안서(FirmsPanel)에서 다룬다
     const notice=page.items.find(n=>n.groupId===groupId&&n.type==='poll_started'&&n.payload.kind!=='firm'&&n.payload.poll_id)
-    if(notice){setVote(await call<Vote>('getVoteSummary',{pollId:notice.payload.poll_id}));return}
+    if(notice){setVote(withClock(await call<Vote>('getVoteSummary',{pollId:notice.payload.poll_id})));return}
     cursor=page.nextCursor
    }while(cursor)
    setVote(null)
@@ -101,10 +105,12 @@ function GroupVoting({groupId}:{groupId:string}){
  useEffect(()=>{queueMicrotask(()=>void load())},[load])
  async function run(task:()=>Promise<unknown>){if(busy)return;setBusy(true);setError('');try{await task();await load()}catch(e){setError(fail(e))}finally{setBusy(false)}}
  return <section><h2>투표</h2>{error&&<p role="alert">{error}</p>}
-  {vote?<><p>{methodLabel[vote.kind]??vote.kind} · {voteState[vote.state]??vote.state} · 마감 {new Date(vote.closesAt).toLocaleString('ko-KR')}</p>
-   {vote.kind==='representative'&&<Button disabled={busy} variant="chip" onClick={()=>void run(()=>call('applyRepresentative',{pollId:vote.pollId}))}>대표자 후보 지원</Button>}
+  {vote&&phase?<><PollStatus title={methodLabel[vote.kind]??vote.kind} phase={phase} opensAt={vote.opensAt} closesAt={vote.closesAt}/>
+   {['tied','no_votes','cancelled'].includes(vote.state)&&<p>{voteState[vote.state]}</p>}
+   {/* 후보 지원은 서버 규칙상 시작 시각 전(시작 대기)에만 가능하다 */}
+   {vote.kind==='representative'&&<Button disabled={busy||phase!=='waiting'} variant="chip" onClick={()=>void run(()=>call('applyRepresentative',{pollId:vote.pollId}))}>대표자 후보 지원</Button>}
    <ul>{vote.options.map(option=><li key={option.optionId}>{methodLabel[option.label]??option.label} · {option.voteCount}표 {vote.myOptionId===option.optionId&&'· 내 선택'}
-    {vote.kind!=='firm'&&<Button disabled={busy||['closed','tied','no_votes','cancelled'].includes(vote.state)} size="sm" onClick={()=>void run(()=>call(vote.kind==='method'?'castMethodVote':'castRepresentativeVote',vote.kind==='method'?{pollId:vote.pollId,choice:option.label}:{pollId:vote.pollId,optionId:option.optionId}))}>선택하기</Button>}
+    {vote.kind!=='firm'&&<Button disabled={busy||!canVote(phase)} size="sm" onClick={()=>void run(()=>call(vote.kind==='method'?'castMethodVote':'castRepresentativeVote',vote.kind==='method'?{pollId:vote.pollId,choice:option.label}:{pollId:vote.pollId,optionId:option.optionId}))}>선택하기</Button>}
    </li>)}</ul>
   </>:<p>아직 확인할 투표가 없어요.</p>}
   <Button variant="chip" disabled={busy} onClick={()=>void load()}>투표 새로고침</Button>

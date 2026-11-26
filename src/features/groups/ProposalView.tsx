@@ -6,8 +6,8 @@ import Icon from '@/components/common/Icon'
 import Toast from '@/components/common/Toast'
 import p from '@/components/layout/Page.module.css'
 import { call } from '@/lib/live-api'
-import { VoteButton, cardOf } from './parts'
-import { optionOf, useFirmVote, winnerProposalId } from './firmVote'
+import { PollStatus, VoteButton, cardOf } from './parts'
+import { optionOf, useFirmStage, useFirmVote, winnerProposalId } from './firmVote'
 import { useRunner } from './FirmsPanel'
 import s from './Dashboard.module.css'
 import { routes } from '@/lib/routes'
@@ -16,6 +16,8 @@ import { routes } from '@/lib/routes'
 export default function ProposalView({ groupId, proposalId }: { groupId: string; proposalId: string }) {
   const { data, error: loadError, reload } = useFirmVote(groupId)
   const runner = useRunner(reload)
+  // 시작 대기 · 투표 중 · 집계 대기는 30초마다 다시 계산된다
+  const { stage, phase } = useFirmStage(data)
   const compareHref = routes.groupView(groupId, 'firms')
   const back = (
     <div className={p.bar}>
@@ -27,7 +29,7 @@ export default function ProposalView({ groupId, proposalId }: { groupId: string;
   if (loadError || !data) {
     return <div className={`${p.page} ${p.narrow}`}>{back}<p role={loadError ? 'alert' : 'status'}>{loadError || '제안서를 불러오고 있어요.'}</p></div>
   }
-  const { group, proposals, vote, stage, membership } = data
+  const { group, proposals, vote, membership } = data
   const x = proposals.find((item) => item.id === proposalId)
   if (!membership || !x) {
     return (
@@ -73,13 +75,14 @@ export default function ProposalView({ groupId, proposalId }: { groupId: string;
           <p className={s.resultDesc}>연락처 공개에 동의한 참여자 정보만 선정된 로펌에 전달돼요.</p>
         </section>
       )}
+      {(stage === 'waiting' || stage === 'voting') && vote && phase && <PollStatus title="로펌 투표" phase={phase} opensAt={vote.opensAt} closesAt={vote.closesAt} />}
       {runner.error && <p role="alert" className={p.note}>{runner.error}</p>}
 
       <div className={`${p.actions} ${closed ? p.actionsStart : ''}`}>
         <Button href={compareHref} variant="chip">다른 제안서와 비교하기</Button>
-        {stage === 'voting' && vote && option && (
+        {(stage === 'voting' || stage === 'waiting') && vote && option && (
           <span className={s.voteInline}>
-            <VoteButton fixed voted={voted} disabled={runner.busy} onClick={() => void runner.run('vote',
+            <VoteButton fixed phase={phase} voted={voted} disabled={runner.busy} onClick={() => void runner.run('vote',
               () => call('castFirmVote', { pollId: vote.pollId, proposalId: x.id }), '투표했어요. 마감 전까지 다른 로펌으로 바꿀 수 있어요')}>이 로펌에 투표하기</VoteButton>
           </span>
         )}
