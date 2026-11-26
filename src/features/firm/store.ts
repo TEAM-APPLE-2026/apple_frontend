@@ -1,35 +1,17 @@
 'use client'
 
 import { useSyncExternalStore } from 'react'
-import { VOTING_GROUP_ID } from './data'
 
-// 로펌 화면 시연 상태. 탭을 닫으면 처음으로 돌아가도록 sessionStorage에 보관.
-// 백엔드 연결 시 이 모듈을 API 호출로 바꾸면 됩니다.
-
-export type ProposalStatus = 'submitted' | 'voting' | 'selected'
-
-export type Proposal = {
-  groupId: string
-  fee: string
-  successFee: string
-  period: string
-  lawyers: string
-  leadLawyer: string
-  strategy: string
-  submittedAt: string
-  status: ProposalStatus
-}
+// 로펌 화면 공통 상태: 로그인 알림과 토스트만 둔다. 제안서 · 그룹 데이터는 서버에서 읽는다(./live.ts).
+// loggedIn은 새로고침 때 로그인 알림이 다시 뜨지 않도록 sessionStorage에 보관한다.
 
 type State = {
   loggedIn: boolean
-  /** 공동소송으로 정해진 그룹 id 목록 */
-  lawsuitGroups: string[]
-  proposals: Proposal[]
   toast: string | null
 }
 
-const KEY = 'hande:firm-demo'
-const INITIAL: State = { loggedIn: false, lawsuitGroups: ['insurance', 'travel'], proposals: [], toast: null }
+const KEY = 'hande:firm-session'
+const INITIAL: State = { loggedIn: false, toast: null }
 
 let state: State = INITIAL
 let loaded = false
@@ -39,21 +21,19 @@ function load() {
   if (loaded || typeof window === 'undefined') return
   loaded = true
   try {
-    const raw = sessionStorage.getItem(KEY)
-    if (raw) state = { ...INITIAL, ...JSON.parse(raw), toast: null }
+    state = { ...INITIAL, loggedIn: sessionStorage.getItem(KEY) === '1' }
   } catch {
-    /* 저장된 값이 깨졌으면 처음 상태로 */
+    /* 저장소를 못 쓰면 처음 상태로 */
   }
 }
 
 function set(next: Partial<State>) {
   state = { ...state, ...next }
   try {
-    const { toast: _toast, ...persist } = state
-    void _toast
-    sessionStorage.setItem(KEY, JSON.stringify(persist))
+    if (state.loggedIn) sessionStorage.setItem(KEY, '1')
+    else sessionStorage.removeItem(KEY)
   } catch {
-    /* 저장 실패는 무시 (시연용) */
+    /* 저장 실패는 무시 */
   }
   listeners.forEach((l) => l())
 }
@@ -68,25 +48,10 @@ export function useFirmState() {
   return useSyncExternalStore(subscribe, () => (load(), state), () => INITIAL)
 }
 
-const NEXT: Record<ProposalStatus, ProposalStatus> = { submitted: 'voting', voting: 'selected', selected: 'selected' }
-
 export const firmActions = {
   showToast: (toast: string) => { load(); set({ toast }) },
   /** 실제로 로그아웃 → 로그인으로 바뀔 때만 알림. 세션 새로고침(사업자 조회 등)마다 다시 뜨지 않게 한다. */
   login: (toast: string) => { load(); if (!state.loggedIn) set({ loggedIn: true, toast }) },
   clearToast: () => set({ toast: null }),
-  /** [시연] 투표 중이던 그룹을 공동소송으로 확정 (F-01 → F-02) */
-  closeVote: () => set({ lawsuitGroups: [...new Set([...state.lawsuitGroups, VOTING_GROUP_ID])] }),
-  submitProposal: (p: Omit<Proposal, 'submittedAt' | 'status'>) => {
-    const d = new Date()
-    const submittedAt = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
-    set({
-      proposals: [...state.proposals.filter((x) => x.groupId !== p.groupId), { ...p, submittedAt, status: 'submitted' }],
-      toast: '수임 제안서를 제출했습니다',
-    })
-  },
-  /** [시연] 제출됨 → 피해자 투표 중 → 선정됨 (F-09 → F-10 → F-11) */
-  advanceProposal: (groupId: string) =>
-    set({ proposals: state.proposals.map((p) => (p.groupId === groupId ? { ...p, status: NEXT[p.status] } : p)) }),
   reset: () => set({ ...INITIAL }),
 }

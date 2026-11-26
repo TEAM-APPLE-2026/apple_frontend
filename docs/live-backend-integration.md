@@ -16,9 +16,42 @@
 
 ## 아직 남은 연결
 
-로펌 제안서 제출·선정·진행 현황, 피해자 로펌 선정 투표, 연락처 동의 화면은 후속 작업이다. 기존 해당 시연 화면을 실제 데이터 연결 완료로 간주하지 않는다. 로펌 투표 options의 proposalId·methodCode·candidateUserId는 client.mjs에서 받을 수 있게 됐지만 화면에는 아직 연결하지 않았다. 그때까지 이름으로 추측해 투표하지 않고 미연동 안내를 표시한다.
+연락처 동의(grantContactConsent), 선정 로펌의 담당 사건·참여자 명단(getSelectedContacts), 공지(createNotice/listNotices)는 후속 작업이다. 로펌 제안서·로펌 선택 투표는 아래 "로펌 제안서 → 로펌 선택 투표"에서 연결했다.
+
+- 로펌은 그룹 참여자가 아니라서 투표 진행 중에는 로펌 투표 pollId를 받을 API가 없다(polls 조회 권한 없음, poll_started 알림은 참여자에게만). 그래서 `getMyProposalVoteSummary`는 선정된 뒤 `firm_selected` 알림의 pollId로만 호출하고, 투표 중 내 득표는 표시하지 않는다. 투표 중 득표를 보여 주려면 backend에 로펌용 pollId 조회(예: 그룹별 최신 firm poll)가 필요하다.
+- 선정되지 않은 로펌은 그룹의 `selectedFirmName`이 채워진 것으로 "선정되지 않음"을 표시하고, 득표 수는 보여 주지 않는다.
+- 시연용 그룹 대시보드(`GroupDashboard.tsx`, 대응 방법 투표·KPI 예시)와 사이드바 내 그룹 목록(`groups/data.ts`)은 이번 범위가 아니어서 그대로 두었다. GroupDashboard는 현재 어느 경로에도 연결돼 있지 않다.
 
 이번 1차 연결은 기존 공용 컴포넌트·CSS를 사용하지만, 실제 항목을 표현하면서 목록/정리/상세 내부 구성이 바뀐 부분은 프론트 담당자 디자인 리뷰가 필요하다.
+
+## 로펌 제안서 → 로펌 선택 투표 (시연 장면 4·5)
+
+예시 데이터(`features/firm/data.ts`, 로펌 store의 제안서 상태, 그룹 store의 로펌 투표 상태)와 `[시연]`·`[데모]` 마감 버튼을 없애고 실제 호출로 바꿨다. 화면 구성(JSX·CSS)은 기존 시연 화면을 유지했다. 데이터는 `features/firm/live.ts`(로펌), `features/groups/firmVote.ts`(피해자)에서 읽는다.
+
+| 화면 | 주소 | 사용하는 함수 |
+| --- | --- | --- |
+| 로펌 사건 탐색(GroupExplorer) | `/firm` | listGroups(공동소송 그룹만), listProposals(내 것), getGroupStats(승인된 로펌만 2차 피해·증거 보유율) |
+| 로펌 그룹 보기 | `/firm/groups/view?id=` | getGroup, getGroupStats, listProposals |
+| 제안서 작성·수정·철회(ProposalForm) | `/firm/groups/proposal?id=` | submitProposal, updateProposal(철회한 제안서 재제출 포함), withdrawProposal |
+| 내 제안서(ProposalList) | `/firm/proposals` | listProposals, listNotifications(firm_selected), getMyProposalVoteSummary(선정 후) |
+| 피해자 그룹 상세의 로펌 제안서(FirmsPanel) | `/groups/view?id=` | listProposals, listNotifications(poll_started·kind=firm), getVoteSummary, castFirmVote(선택지의 proposalId), 대표자: setProposalDeadline, openPoll(kind='firm') |
+| 제안서 상세(ProposalView) | `/groups/proposal?id=&proposalId=` | 위와 같음 |
+
+- 제안서 칸: 착수금은 1인당 원 단위 정수(0이면 "없음"), 성공보수 0~100(소수 둘째 자리), 담당 변호사 수 1명 이상. 서버 `validate_proposal` 기준과 같다.
+- 투표는 서버 투표라 취소가 없다. 다른 로펌을 누르면 바뀐다.
+- 투표 마감·집계는 서버 Cron(close_due_votes)이 한다. 화면은 마감 시간이 지나고 집계 전이면 "집계 중", 집계 후 `winnerOptionId`·`selectedFirmName`으로 선정 로펌을 표시한다. 동점·투표 없음·취소면 대표자가 다시 열 수 있다고 안내한다.
+- DB 오류 코드는 `friendlyError(e, action)`(`src/lib/live-api.ts`)에서 상황별 쉬운 말로 바꾼다. 예: FIRM_NOT_APPROVED → 승인·사업자 확인 안내, PROPOSAL_CLOSED → 제안 접수 기간 아님(투표 열기에서는 "제안 마감일이 지나야"), POLL_CLOSED, POLL_NOT_OPEN, NOT_ELIGIBLE(투표: 투표가 열릴 때 참여 중이던 분만 / 투표 열기: 승인된 로펌 제안서 1건 이상 필요), CONFLICT(이미 낸 제안서·마감일 변경 불가·진행 중인 투표).
+
+### 시연 순서 (hande_dev)
+
+1. 준비: 피해자 그룹이 대표자 선정 → 대응 방법 투표에서 공동소송(`suit`)으로 정해져 `proposal_collection` 단계여야 한다. 로펌 계정은 승인(approved)·계속사업자(active) 상태여야 한다(개발 DB는 firm_auto_approve 설정 시 자동 승인).
+2. 피해자(대표자) `/groups/view?id=` → 로펌 제안서 → 대표자 메뉴에서 제안 마감일 저장(setProposalDeadline). 제안서가 들어오기 전까지만 바꿀 수 있다.
+3. 로펌 `/firm` → 그룹의 "제안서 작성" → 미리보기 → 제출(submitProposal). `/firm/proposals`에서 "제출됨" 확인. 마감 전에는 수정·철회 가능.
+4. 제안 마감일이 지나면 대표자가 로펌 투표 시작·마감 시간을 넣고 "로펌 투표 열기"(openPoll kind='firm'). 로펌 화면은 "피해자 투표 중"으로 바뀐다.
+5. 참여자가 제안서 카드나 상세에서 "이 로펌에 투표하기"(castFirmVote). 마감 전에는 다른 로펌으로 바꿀 수 있다.
+6. 마감 시간이 지나면 서버 Cron이 집계한다(1분 간격). 새로고침하면 피해자 화면에 "선정된 로펌", 로펌 화면에 "선정됨 · n표" 또는 "선정되지 않음"이 표시된다.
+
+시연 시간을 줄이려면 2~4단계의 마감 시간을 몇 분 뒤로 잡는다. 화면에서 마감을 앞당기는 버튼은 없다.
 
 ## 개발용 확인 화면 (/dev/check)
 

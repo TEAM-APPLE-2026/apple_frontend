@@ -1,14 +1,14 @@
 'use client'
 
-import { notFound, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import ProposalView from '@/features/groups/ProposalView'
-import { FIRM_IDS, type FirmId } from '@/features/groups/dashboardData'
+import { isUuid } from '@/lib/routes'
 
-// U-32 · U-35 로펌 수임 제안서 읽기 (피해자 시점) (/groups/proposal?id=&firmId=)
+// U-32 · U-35 로펌 수임 제안서 읽기 (피해자 시점) (/groups/proposal?id=&proposalId=)
 export default function GroupProposalView() {
   const params = useSearchParams()
   const id = params.get('id') ?? ''
-  const firmId = params.get('firmId') ?? ''
-  if (id !== 'telecom' || !FIRM_IDS.includes(firmId as FirmId)) notFound()
-  return <ProposalView groupId={id} firmId={firmId as FirmId} />
+  const proposalId = params.get('proposalId') ?? ''
+  if (!isUuid(id) || !isUuid(proposalId)) return <p>올바른 제안서 주소로 접속해 주세요.</p>
+  return <ProposalView groupId={id} proposalId={proposalId} />
 }

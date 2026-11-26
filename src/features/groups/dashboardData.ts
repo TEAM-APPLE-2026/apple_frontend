@@ -1,7 +1,7 @@
-// 그룹 대시보드 목업 데이터 (Figma U-23 ~ U-38). 수치 · 제안서 내용은 모두 [예시]입니다.
+// 그룹 대시보드 목업 데이터 (Figma U-23 ~ U-29 · U-36 ~ U-38). 수치는 모두 [예시]입니다.
+// 로펌 제안서 · 투표(U-30 ~ U-35)는 실제 데이터를 쓴다.
 
 export type MethodId = 'mediation' | 'lawsuit'
-export type FirmId = 'ga' | 'na' | 'ma'
 
 export const GROUP = {
   title: '[예시] △△ 통신사 고객정보 유출',
@@ -11,7 +11,6 @@ export const GROUP = {
   goal: 300,
   voters: 128,
   methodDeadline: '[예시] 11월 20일 오후 6시 마감',
-  firmDeadline: '[예시] 11월 27일 오후 6시',
 }
 
 export const METHODS: Record<MethodId, { name: string; voteName: string; desc: string; base: number; recommended?: boolean }> = {
@@ -20,28 +19,6 @@ export const METHODS: Record<MethodId, { name: string; voteName: string; desc: s
 }
 /** 시연에서 대응 방법 투표는 공동소송으로 결정됨 */
 export const METHOD_WINNER: MethodId = 'lawsuit'
-
-export type Firm = {
-  name: string
-  submitted: string
-  lawyer: string
-  fee: string
-  successFee: string
-  period: string
-  lawyers: number
-  strategy: string
-  base: number
-  isNew?: boolean
-}
-
-export const FIRMS: Record<FirmId, Firm> = {
-  ga: { name: '[예시] 가 법무법인', submitted: '2026.11.03', lawyer: '[예시] 이OO 변호사', fee: '1인 3만 원', successFee: '15%', period: '6~9개월', lawyers: 3, strategy: '집단분쟁조정을 먼저 신청하고, 결렬되면 공동소송으로 넘어갑니다.', base: 41 },
-  na: { name: '[예시] 나 법무법인', submitted: '2026.11.05', lawyer: '[예시] 최OO 변호사', fee: '없음', successFee: '20%', period: '9~12개월', lawyers: 4, strategy: '스미싱 등 2차 피해 입증에 집중해 손해배상을 청구합니다.', base: 27 },
-  ma: { name: '[예시] 마 법무법인', submitted: '2026.11.10', lawyer: '[예시] 김OO 변호사', fee: '1인 2만 원', successFee: '12%', period: '6~10개월', lawyers: 3, strategy: '유출 통지 지연과 2차 피해(스미싱)의 인과관계를 중심으로 손해배상을 청구합니다. 증거 보유율이 높아 공동소송으로 진행합니다.', base: 52, isNew: true },
-}
-export const FIRM_IDS = Object.keys(FIRMS) as FirmId[]
-/** 시연에서 로펌 투표는 마 법무법인으로 결정됨 */
-export const FIRM_WINNER: FirmId = 'ma'
 
 export const KPIS = [
   { label: '참여자', value: '214', unit: '명', caption: '이번 주 +18명', up: true },

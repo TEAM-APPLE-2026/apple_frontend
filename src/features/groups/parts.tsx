@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import Button from '@/components/common/Button'
-import { STAGE_NAMES, type Firm, type FirmId } from './dashboardData'
+import { STAGE_NAMES } from './dashboardData'
+import { formatDate, formatWon, type Proposal } from '@/lib/live-api'
 import s from './Dashboard.module.css'
 import { routes } from '@/lib/routes'
 
@@ -80,11 +81,18 @@ export function Milestones({ rows }: { rows: { label: string; value: string }[] 
   )
 }
 
-export const proposalHref = (groupId: string, id: FirmId) => routes.groupProposal(groupId, id)
+export const proposalHref = (groupId: string, proposalId: string) => routes.groupProposal(groupId, proposalId)
+
+/** 카드·비교표·상세에 쓰는 표시용 값 */
+export type CardFirm = { name: string; submitted: string; lawyer: string; fee: string; successFee: string; period: string; lawyers: number; strategy: string }
+export const cardOf = (x: Proposal): CardFirm => ({
+  name: x.firmName, submitted: formatDate(x.submittedAt), lawyer: x.leadLawyer, fee: formatWon(x.retainerFee),
+  successFee: `${x.successFeePct}%`, period: x.period, lawyers: x.lawyerCount, strategy: x.strategy,
+})
 
 // pc: 로펌 수임 제안서 카드 (U-30 · U-31 · U-34)
 export function ProposalCard({ id, firm, groupId, tags, highlight, footer }: {
-  id: FirmId; firm: Firm; groupId: string; tags: ReactNode; highlight?: 'blue' | 'neon'; footer: ReactNode
+  id: string; firm: CardFirm; groupId: string; tags: ReactNode; highlight?: 'blue' | 'neon'; footer: ReactNode
 }) {
   return (
     <article className={`${s.pc} ${highlight ? s[`pc_${highlight}`] : ''}`} aria-labelledby={`pc-${id}`}>
@@ -109,8 +117,11 @@ export function ProposalCard({ id, firm, groupId, tags, highlight, footer }: {
 }
 
 // 투표 버튼: 투표하면 Pressed(흰색) · 다시 누르면 취소. 추천이 아닌 방법 카드는 Chip.
-export function VoteButton({ voted, onClick, children, chip }: { voted: boolean; onClick: () => void; children: string; chip?: boolean }) {
+// fixed: 서버 투표처럼 취소가 없고 다른 선택지를 눌러 바꾸는 경우
+export function VoteButton({ voted, onClick, children, chip, fixed, disabled }: {
+  voted: boolean; onClick: () => void; children: string; chip?: boolean; fixed?: boolean; disabled?: boolean
+}) {
   return voted
-    ? <Button block variant="pressed" check onClick={onClick} aria-pressed>투표함 · 다시 누르면 취소</Button>
-    : <Button block variant={chip ? 'chip' : 'primary'} onClick={onClick} aria-pressed={false}>{children}</Button>
+    ? <Button block variant="pressed" check onClick={onClick} disabled={disabled || fixed} aria-pressed>{fixed ? '투표함 · 다른 로펌을 누르면 바뀌어요' : '투표함 · 다시 누르면 취소'}</Button>
+    : <Button block variant={chip ? 'chip' : 'primary'} onClick={onClick} disabled={disabled} aria-pressed={false}>{children}</Button>
 }
