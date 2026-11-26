@@ -1,6 +1,6 @@
 # 실제 화면 연동 1차
 
-기준: 소민님 PR #7 `feature/backend-setup`의 `5191471`. 기존 공용 `backend`, `ai`, `supabase`, `routes` 모듈을 사용한다. 별도의 `/dev/backend` 화면은 추가하지 않는다. main 병합·GitHub Pages 배포는 이번 작업에서 하지 않는다.
+기준: 소민님 PR #7 `feature/backend-setup`의 `5191471`. 기존 공용 `backend`(`src/lib/backend/`), `ai`, `supabase`, `routes` 모듈을 사용한다. 개발용 확인 화면은 `/dev/check` 하나만 둔다(아래 참고). main 병합·GitHub Pages 배포는 이번 작업에서 하지 않는다.
 
 ## 연결한 화면
 
@@ -12,13 +12,25 @@
 - 대표자/대응 방법 투표: 본인 알림의 poll_id로 집계 조회, 대표자 지원, 투표 제출/변경, 투표 개설. 권한·정족수·기간·중복 검사는 DB 함수가 판단한다.
 - 로펌 정보: 로펌 승인 신청(등록증 업로드 포함), 승인/사업자 상태 조회, 국세청 조회. active와 approved를 동일시하지 않는다.
 
-`client.mjs`는 backend PR #8의 `c34d7f2` 버전으로 동기화했다. 실제 구현을 여기서 수정한 것이 아니라 백엔드 데이터 모듈을 그대로 가져왔다. 따라서 증빙·NTS 기능은 backend PR #8 배포가 전제다. 개발 DB에는 이미 반영돼 있으며 운영은 별도 확인이 필요하다.
+`src/lib/backend/client.mjs`는 backend `feature/vote-proposal-id`의 `2658ccf` 버전으로 동기화했다(출처는 `src/lib/backend/index.ts` 주석). 실제 구현을 여기서 수정한 것이 아니라 백엔드 데이터 모듈을 그대로 가져왔다. 따라서 증빙·NTS 기능은 backend PR #8 배포가 전제다. 개발 DB에는 이미 반영돼 있으며 운영은 별도 확인이 필요하다.
 
 ## 아직 남은 연결
 
-로펌 제안서 제출·선정·진행 현황, 피해자 로펌 선정 투표, 연락처 동의 화면은 후속 작업이다. 기존 해당 시연 화면을 실제 데이터 연결 완료로 간주하지 않는다. 로펌 투표 options에는 현재 제안서 ID가 없어 이름으로 추측해 투표하지 않으며 명시적으로 미연동 안내를 표시한다.
+로펌 제안서 제출·선정·진행 현황, 피해자 로펌 선정 투표, 연락처 동의 화면은 후속 작업이다. 기존 해당 시연 화면을 실제 데이터 연결 완료로 간주하지 않는다. 로펌 투표 options의 proposalId·methodCode·candidateUserId는 client.mjs에서 받을 수 있게 됐지만 화면에는 아직 연결하지 않았다. 그때까지 이름으로 추측해 투표하지 않고 미연동 안내를 표시한다.
 
 이번 1차 연결은 기존 공용 컴포넌트·CSS를 사용하지만, 실제 항목을 표현하면서 목록/정리/상세 내부 구성이 바뀐 부분은 프론트 담당자 디자인 리뷰가 필요하다.
+
+## 개발용 확인 화면 (/dev/check)
+
+PR #8의 `/dev/backend` 화면과 `src/lib/backend.ts`·`src/lib/backend-client.mjs`(오래된 client.mjs 복사본)는 정리하면서 삭제했다. `/dev/backend`에서 하던 검사 가운데 실제 화면으로 확인할 수 없는 것만 `/dev/check`로 옮겼다.
+
+- 공개 키 확인: `NEXT_PUBLIC_SUPABASE_ANON_KEY`가 anon/publishable 키인지, URL과 같은 프로젝트의 키인지 표시한다. secret/service_role 키를 넣은 실수를 잡는다.
+- 로펌 승인 상태 전이: 로펌 계정으로 로그인한 뒤 버튼을 누르면 getMyFirm → verifyBusiness → getMyFirm을 실행한다. 승인 상태가 그대로이거나 pending → approved(개발 DB `firm_auto_approve` 설정)일 때만 통과다. rejected가 바뀌거나 응답과 DB 값이 다르면 실패로 표시한다.
+- 기존 항목: Supabase 연결(listGroups), 로그인 세션, analyze 결과.
+
+로그인·프로필·로그아웃, 사례 저장·재조회, 증빙 업로드·확인 재시도·삭제·객체 삭제 재시도, 국세청 조회, 그룹 목록은 실제 화면에서 확인한다(로그인 화면, `/report`, `/firm/profile`, `/cases`).
+
+`/dev/check`는 정적 빌드에 포함되므로 발표 전에 `src/app/dev`를 삭제한다. 로컬에서 Turbopack 파일 감시가 실패하면 `npm run dev -- --webpack`으로 실행한다(PR #8 작업 환경에서 확인된 문제).
 
 ## 로펌 테스트 계정 만들기 (hande_dev만)
 

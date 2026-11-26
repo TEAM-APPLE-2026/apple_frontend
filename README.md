@@ -80,4 +80,4 @@ src/
 
 ## 개발 Supabase 연결
 
-실제 개발 DB 연결을 확인하는 `/dev/backend` 화면과 [설정·검증 범위](docs/development-backend.md)를 추가했습니다. 기존 제품 화면은 아직 시연 데이터를 사용합니다. `.env.example`을 참고하고 공개 키만 설정하세요.
+실제 화면은 `src/lib/backend/`(진입점 `@/lib/backend`)로 개발 DB에 연결됩니다. 연결된 화면, 남은 작업, `/dev/check`에서 하는 검사는 [실제 화면 연동 문서](docs/live-backend-integration.md)에 정리했습니다. `.env.example`을 참고하고 공개 키만 설정하세요.
