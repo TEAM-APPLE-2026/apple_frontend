@@ -25,7 +25,13 @@
 PR #8의 `/dev/backend` 화면과 `src/lib/backend.ts`·`src/lib/backend-client.mjs`(오래된 client.mjs 복사본)는 정리하면서 삭제했다. `/dev/backend`에서 하던 검사 가운데 실제 화면으로 확인할 수 없는 것만 `/dev/check`로 옮겼다.
 
 - 공개 키 확인: `NEXT_PUBLIC_SUPABASE_ANON_KEY`가 anon/publishable 키인지, URL과 같은 프로젝트의 키인지 표시한다. secret/service_role 키를 넣은 실수를 잡는다.
-- 로펌 승인 상태 전이: 로펌 계정으로 로그인한 뒤 버튼을 누르면 getMyFirm → verifyBusiness → getMyFirm을 실행한다. 승인 상태가 그대로이거나 pending → approved(개발 DB `firm_auto_approve` 설정)일 때만 통과다. rejected가 바뀌거나 응답과 DB 값이 다르면 실패로 표시한다.
+- 로펌 승인 상태 전이: 로펌 계정으로 로그인한 뒤 버튼을 누르면 getMyFirm → verifyBusiness → getMyFirm을 실행한다. 응답과 DB 값이 다르면 실패다. 통과 기준은 연결된 프로젝트에 따라 다르고, 화면에 현재 기준을 표시한다.
+  - 개발 프로젝트: 승인 상태가 그대로이거나 pending → approved(개발 DB `firm_auto_approve` 자동 승인)면 통과.
+  - 그 외(운영 등): 승인은 운영자 수동 처리뿐이므로 조회 전후 승인 상태가 같아야 통과. 국세청 조회가 승인 상태를 바꾸면 실패.
+
+### 개발 프로젝트 구분
+
+개발 프로젝트 ref(`jnpbuulrmgdkzbiywjtd`, hande_dev)는 `src/lib/supabase.ts`의 `DEV_PROJECT_REF` 한 곳에만 둔다. `NEXT_PUBLIC_SUPABASE_URL`(`https://<ref>.supabase.co`)에서 읽은 ref가 이 값과 같을 때만 `isDevProject()`가 true다. URL이 없거나 다른 프로젝트면 운영 기준으로 검사한다(자동 승인을 허용하지 않는 쪽이 기본값). 개발 프로젝트가 바뀌면 이 상수와 이 문단을 함께 고친다.
 - 기존 항목: Supabase 연결(listGroups), 로그인 세션, analyze 결과.
 
 로그인·프로필·로그아웃, 사례 저장·재조회, 증빙 업로드·확인 재시도·삭제·객체 삭제 재시도, 국세청 조회, 그룹 목록은 실제 화면에서 확인한다(로그인 화면, `/report`, `/firm/profile`, `/cases`).
