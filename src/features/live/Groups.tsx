@@ -7,6 +7,9 @@ import {getSupabase} from '@/lib/supabase'
 import {routes} from '@/lib/routes'
 import {useSession} from '@/features/auth/SessionProvider'
 import p from '@/components/layout/Page.module.css'
+import FirmsPanel from '@/features/groups/FirmsPanel'
+import {PollStatus,canVote} from '@/features/groups/parts'
+import {usePollPhase,withClock} from '@/features/groups/pollPhase'
 const phase:Record<string,string>={recruiting:'모집 중',rep_election:'대표자 투표',method_vote:'대응 방법 투표',proposal_collection:'로펌 제안 접수',firm_vote:'로펌 투표',connected:'사건 진행 중',closed:'종결'}
 const methodLabel:Record<string,string>={med:'분쟁조정',consumer:'소비자단체 상담',collective:'공동 대응',suit:'공동소송',representative:'대표자 선정',method:'대응 방법',firm:'로펌 선정'}
 const voteState:Record<string,string>={scheduled:'시작 대기',open:'투표 중',closed:'마감',tied:'동점 · 재투표 필요',no_votes:'투표 없음',cancelled:'취소',completed:'집계 완료'}
@@ -71,7 +74,7 @@ export function GroupDetail({id}:{id:string}){
    <dl className={`${p.dl} ${p.dlBox}`}>
     {Object.entries({'기업':group.company,'피해 유형':'개인정보 유출','참여 인원':`${group.memberCount}명`,'진행 단계':phase[group.subStatus]??group.subStatus,'참여 조건':group.conditions||'별도 조건 없음'}).map(([label,value])=><div key={label} className={p.dlRow}><dt className={p.dt}>{label}</dt><dd className={p.dd}>{value}</dd></div>)}
    </dl>
-   {member?<><p>참여 중인 사건이에요.</p><GroupVoting groupId={id}/></>:profile?.profile.role==='user'?<>
+   {member?<><p>참여 중인 사건이에요.</p><GroupVoting groupId={id}/>{group.method==='suit'&&<FirmsPanel groupId={id}/>}</>:profile?.profile.role==='user'?<>
     <p>피해 등록에서 확인·저장을 완료한 같은 기업의 사례로 참여할 수 있어요.</p>
     <Button href="/report" variant="chip">내 피해 등록하기</Button>{reportId&&<Button disabled={busy} onClick={()=>void join()}>최근 등록한 피해로 참여하기</Button>}
    </>:<Button href="/login">피해자 로그인 후 참여하기</Button>}
@@ -79,18 +82,21 @@ export function GroupDetail({id}:{id:string}){
  </div>
 }
 
-type Vote={pollId:string;kind:string;state:string;closesAt:string;myOptionId:string|null;options:{optionId:string;label:string;voteCount:number}[]}
-type Notice={groupId:string;type:string;payload:{poll_id?:string}}
+type Vote={pollId:string;kind:string;state:string;opensAt:string;closesAt:string;serverTime:string;myOptionId:string|null;options:{optionId:string;label:string;voteCount:number}[]}
+type Notice={groupId:string;type:string;payload:{poll_id?:string;kind?:string}}
 function GroupVoting({groupId}:{groupId:string}){
  const [vote,setVote]=useState<Vote|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false)
  const [opens,setOpens]=useState(''),[closes,setCloses]=useState(''),[kind,setKind]=useState('representative')
+ // 시작 대기 · 투표 중 · 마감 (30초마다 재계산). 투표 버튼은 투표 중에만 눌린다.
+ const phase=usePollPhase(vote)
  const load=useCallback(async()=>{
   try{
    let cursor:string|null=null
    do{
     const page:Page<Notice>=await call<Page<Notice>>('listNotifications',{cursor,limit:100})
-    const notice=page.items.find(n=>n.groupId===groupId&&n.type==='poll_started'&&n.payload.poll_id)
-    if(notice){setVote(await call<Vote>('getVoteSummary',{pollId:notice.payload.poll_id}));return}
+    // 로펌 투표는 아래 로펌 제안서(FirmsPanel)에서 다룬다
+    const notice=page.items.find(n=>n.groupId===groupId&&n.type==='poll_started'&&n.payload.kind!=='firm'&&n.payload.poll_id)
+    if(notice){setVote(withClock(await call<Vote>('getVoteSummary',{pollId:notice.payload.poll_id})));return}
     cursor=page.nextCursor
    }while(cursor)
    setVote(null)
@@ -99,12 +105,13 @@ function GroupVoting({groupId}:{groupId:string}){
  useEffect(()=>{queueMicrotask(()=>void load())},[load])
  async function run(task:()=>Promise<unknown>){if(busy)return;setBusy(true);setError('');try{await task();await load()}catch(e){setError(fail(e))}finally{setBusy(false)}}
  return <section><h2>투표</h2>{error&&<p role="alert">{error}</p>}
-  {vote?<><p>{methodLabel[vote.kind]??vote.kind} · {voteState[vote.state]??vote.state} · 마감 {new Date(vote.closesAt).toLocaleString('ko-KR')}</p>
-   {vote.kind==='representative'&&<Button disabled={busy} variant="chip" onClick={()=>void run(()=>call('applyRepresentative',{pollId:vote.pollId}))}>대표자 후보 지원</Button>}
+  {vote&&phase?<><PollStatus title={methodLabel[vote.kind]??vote.kind} phase={phase} opensAt={vote.opensAt} closesAt={vote.closesAt}/>
+   {['tied','no_votes','cancelled'].includes(vote.state)&&<p>{voteState[vote.state]}</p>}
+   {/* 후보 지원은 서버 규칙상 시작 시각 전(시작 대기)에만 가능하다 */}
+   {vote.kind==='representative'&&<Button disabled={busy||phase!=='waiting'} variant="chip" onClick={()=>void run(()=>call('applyRepresentative',{pollId:vote.pollId}))}>대표자 후보 지원</Button>}
    <ul>{vote.options.map(option=><li key={option.optionId}>{methodLabel[option.label]??option.label} · {option.voteCount}표 {vote.myOptionId===option.optionId&&'· 내 선택'}
-    {vote.kind!=='firm'&&<Button disabled={busy||['closed','tied','no_votes','cancelled'].includes(vote.state)} size="sm" onClick={()=>void run(()=>call(vote.kind==='method'?'castMethodVote':'castRepresentativeVote',vote.kind==='method'?{pollId:vote.pollId,choice:option.label}:{pollId:vote.pollId,optionId:option.optionId}))}>선택하기</Button>}
+    {vote.kind!=='firm'&&<Button disabled={busy||!canVote(phase)} size="sm" onClick={()=>void run(()=>call(vote.kind==='method'?'castMethodVote':'castRepresentativeVote',vote.kind==='method'?{pollId:vote.pollId,choice:option.label}:{pollId:vote.pollId,optionId:option.optionId}))}>선택하기</Button>}
    </li>)}</ul>
-   {vote.kind==='firm'&&<p>로펌 투표 화면 연결은 제안서 ID 연동 후 제공됩니다.</p>}
   </>:<p>아직 확인할 투표가 없어요.</p>}
   <Button variant="chip" disabled={busy} onClick={()=>void load()}>투표 새로고침</Button>
   <details><summary>투표 열기</summary><p>대표자 투표는 개설자, 다른 투표는 대표자만 열 수 있어요. 권한·인원·기간은 서버에서 확인합니다.</p>

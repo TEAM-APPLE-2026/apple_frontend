@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import Button from '@/components/common/Button'
-import { STAGE_NAMES, type Firm, type FirmId } from './dashboardData'
+import { STAGE_NAMES } from './dashboardData'
+import { formatDate, formatDateTime, formatWon, type Proposal } from '@/lib/live-api'
+import { PHASE_LABEL, type PollPhase } from './pollPhase'
 import s from './Dashboard.module.css'
 import { routes } from '@/lib/routes'
 
@@ -80,11 +82,18 @@ export function Milestones({ rows }: { rows: { label: string; value: string }[] 
   )
 }
 
-export const proposalHref = (groupId: string, id: FirmId) => routes.groupProposal(groupId, id)
+export const proposalHref = (groupId: string, proposalId: string) => routes.groupProposal(groupId, proposalId)
+
+/** 카드·비교표·상세에 쓰는 표시용 값 */
+export type CardFirm = { name: string; submitted: string; lawyer: string; fee: string; successFee: string; period: string; lawyers: number; strategy: string }
+export const cardOf = (x: Proposal): CardFirm => ({
+  name: x.firmName, submitted: formatDate(x.submittedAt), lawyer: x.leadLawyer, fee: formatWon(x.retainerFee),
+  successFee: `${x.successFeePct}%`, period: x.period, lawyers: x.lawyerCount, strategy: x.strategy,
+})
 
 // pc: 로펌 수임 제안서 카드 (U-30 · U-31 · U-34)
 export function ProposalCard({ id, firm, groupId, tags, highlight, footer }: {
-  id: FirmId; firm: Firm; groupId: string; tags: ReactNode; highlight?: 'blue' | 'neon'; footer: ReactNode
+  id: string; firm: CardFirm; groupId: string; tags: ReactNode; highlight?: 'blue' | 'neon'; footer: ReactNode
 }) {
   return (
     <article className={`${s.pc} ${highlight ? s[`pc_${highlight}`] : ''}`} aria-labelledby={`pc-${id}`}>
@@ -108,9 +117,26 @@ export function ProposalCard({ id, firm, groupId, tags, highlight, footer }: {
   )
 }
 
+/** 투표 버튼을 누를 수 있는지. 모든 투표에서 이 함수 하나로 판단한다(시작 시각 이후 · 마감 시각 이전). */
+export const canVote = (phase: PollPhase | null | undefined) => phase === 'open'
+
+// 투표 상태 한 줄: 시작 대기(시작 예정 시각) · 투표 중(마감 시각) · 마감
+export function PollStatus({ phase, opensAt, closesAt, title }: { phase: PollPhase; opensAt: string; closesAt: string; title?: string }) {
+  const detail = phase === 'waiting' ? `${formatDateTime(opensAt)} 시작 예정 · ${formatDateTime(closesAt)} 마감`
+    : phase === 'open' ? `${formatDateTime(closesAt)} 마감` : `${formatDateTime(closesAt)} 마감됨`
+  return <p className={s.note} role="status">{title && `${title} · `}<b>{PHASE_LABEL[phase]}</b> · {detail}</p>
+}
+
 // 투표 버튼: 투표하면 Pressed(흰색) · 다시 누르면 취소. 추천이 아닌 방법 카드는 Chip.
-export function VoteButton({ voted, onClick, children, chip }: { voted: boolean; onClick: () => void; children: string; chip?: boolean }) {
+// fixed: 서버 투표처럼 취소가 없고 다른 선택지를 눌러 바꾸는 경우
+// phase를 주면 '투표 중'일 때만 눌린다(시작 대기 · 마감은 비활성화)
+export function VoteButton({ voted, onClick, children, chip, fixed, disabled, phase }: {
+  voted: boolean; onClick: () => void; children: string; chip?: boolean; fixed?: boolean; disabled?: boolean; phase?: PollPhase | null
+}) {
+  if (phase !== undefined && !canVote(phase)) {
+    return <Button block variant={voted ? 'pressed' : 'chip'} check={voted} disabled aria-pressed={voted}>{phase === 'waiting' ? '투표 시작 전이에요' : '투표가 마감됐어요'}</Button>
+  }
   return voted
-    ? <Button block variant="pressed" check onClick={onClick} aria-pressed>투표함 · 다시 누르면 취소</Button>
-    : <Button block variant={chip ? 'chip' : 'primary'} onClick={onClick} aria-pressed={false}>{children}</Button>
+    ? <Button block variant="pressed" check onClick={onClick} disabled={disabled || fixed} aria-pressed>{fixed ? '투표함 · 다른 로펌을 누르면 바뀌어요' : '투표함 · 다시 누르면 취소'}</Button>
+    : <Button block variant={chip ? 'chip' : 'primary'} onClick={onClick} disabled={disabled} aria-pressed={false}>{children}</Button>
 }
