@@ -5,6 +5,18 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+// 개발 Supabase 프로젝트(hande_dev)의 ref. 개발/운영 구분은 이 상수 하나로만 한다.
+// 바뀌면 docs/live-backend-integration.md의 "개발 프로젝트 구분"도 함께 고친다.
+export const DEV_PROJECT_REF = "jnpbuulrmgdkzbiywjtd";
+
+/** NEXT_PUBLIC_SUPABASE_URL의 프로젝트 ref(https://<ref>.supabase.co). URL이 없거나 형식이 틀리면 null. */
+export function connectedProjectRef(): string | null {
+  if (!url || !URL.canParse(url)) return null;
+  return new URL(url).hostname.split(".")[0];
+}
+
+export const isDevProject = () => connectedProjectRef() === DEV_PROJECT_REF;
+
 let client: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient {
