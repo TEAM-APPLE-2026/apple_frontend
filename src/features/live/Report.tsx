@@ -4,6 +4,9 @@ import {useRouter} from 'next/navigation'
 import Button from '@/components/common/Button'
 import Field from '@/components/common/Field'
 import Checkbox from '@/components/common/Checkbox'
+import Icon from '@/components/common/Icon'
+import StateBox from '@/components/common/StateBox'
+import stateBox from '@/components/common/StateBox.module.css'
 import Stepper from '@/features/report/Stepper'
 import {analyze,match,draftGroup,type ReportField,type MatchCandidate,type GroupDraft} from '@/lib/ai'
 import {call,type Receipt,type Group,type Page} from '@/lib/live-api'
@@ -21,14 +24,18 @@ export default function LiveReport(){
  const [raw,setRaw]=useState(''),[fields,setFields]=useState<ReportField[]>([]),[warnings,setWarnings]=useState<string[]>([])
  const [reportId,setReportId]=useState<string|null>(null),[checked,setChecked]=useState(false),[publicChecked,setPublicChecked]=useState(false)
  const [groups,setGroups]=useState<Group[]>([]),[matches,setMatches]=useState<MatchCandidate[]>([]),[draft,setDraft]=useState<GroupDraft|null>(null)
+ const [analyzing,setAnalyzing]=useState(false)
  async function run(job:()=>Promise<void>){if(busy)return;setBusy(true);setError('');try{await job()}catch(e){setError(fail(e))}finally{setBusy(false)}}
  const edit=(key:string,userValue:ReportField['userValue'])=>{setChecked(false);setFields(items=>items.map(f=>f.key===key?{...f,userValue,source:'user',needsCheck:userValue===null}:f))}
  async function analyzeReport(){await run(async()=>{
+  setAnalyzing(true);window.scrollTo({top:0})
+  try{
   const result=await analyze(raw,{timeoutMs:20000})
   if('error'in result)throw new Error(result.error.message)
   const saved=await call<Receipt>('saveReport',{rawText:raw,fields:result.data.fields})
   await call('getReport',{reportId:saved.reportId})
   setReportId(saved.reportId);setFields(result.data.fields);setWarnings(result.data.warnings);setChecked(false);setStep('review')
+  }finally{setAnalyzing(false)}
  })}
  async function confirm(){await run(async()=>{
   if(!checked||fields.some(f=>f.key!=='secondary_detail'&&(f.needsCheck||value(f)===null)))throw new Error('확인이 필요한 값을 입력하거나 모름을 선택해 주세요.')
@@ -44,9 +51,13 @@ export default function LiveReport(){
  if(loading)return <p>로그인 상태를 확인하고 있어요.</p>
  if(profile?.profile.role!=='user')return <div className={p.page}><h1>피해자 로그인이 필요해요</h1><Button href="/login">로그인하기</Button></div>
  return <div className={`${p.page} ${p.narrow}`}>
-  <Stepper step={step==='write'?1:step==='review'?2:3}/>
-  {error&&<p role="alert">{error}</p>}{busy&&<p role="status">{step==='write'?'AI 분석·저장 중이에요.':'처리하고 있어요.'}</p>}
-  {step==='write'&&<form onSubmit={e=>{e.preventDefault();void analyzeReport()}}>
+  <Stepper step={analyzing?2:step==='write'?1:step==='review'?2:3}/>
+  {error&&<p role="alert">{error}</p>}{busy&&!analyzing&&<p role="status">처리하고 있어요.</p>}
+  {analyzing&&<>
+   <h1 className={s.title}>AI가 정리하고 있어요</h1>
+   <div className={s.box}><StateBox icon={<Icon name="spinner" size={32} className={stateBox.spin}/>} title="잠시만 기다려 주세요" desc="쓴 글에서 기업 · 피해 유형 · 시기를 찾는 중이에요. 보통 몇 초면 끝나요."/></div>
+  </>}
+  {step==='write'&&!analyzing&&<form onSubmit={e=>{e.preventDefault();void analyzeReport()}}>
    <h1 className={s.title}>어떤 피해를 입으셨나요?</h1><p className={p.sub}>겪은 일을 적으면 AI가 정리해요. 원문에 불필요한 주민번호·계좌번호는 적지 마세요.</p>
    <Field multiline label="겪은 일" value={raw} maxLength={2000} onChange={e=>setRaw(e.target.value)} required/>
    <Button type="submit" disabled={busy||!raw.trim()}>다음 · AI 정리 보기</Button>
