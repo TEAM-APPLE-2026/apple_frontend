@@ -1,13 +1,27 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { usePathname } from 'next/navigation'
 import s from './FluidBackground.module.css'
 
 type Blob = { x: number; y: number; vx: number; vy: number; r: number; a: number }
 
-// 흐르는 파란 빛 배경 (소개 홈 시안의 fluid-canvas). 동작 줄이기 설정이면 정지 화면만 그림.
+const FADE_MS = 800 // FluidBackground.module.css의 transition 시간과 맞춤
+
+// 흐르는 파란 빛 배경 (소개 홈 시안의 fluid-canvas). 소개 홈(/)에서만 보이고, 다른 화면으로 가면 서서히 사라짐. 동작 줄이기 설정이면 정지 화면만 그림.
 export default function FluidBackground() {
   const ref = useRef<HTMLCanvasElement>(null)
+  const visible = usePathname() === '/'
+  const visibleRef = useRef(visible)
+  const syncRef = useRef<() => void>(() => {})
+
+  // 다 사라진 뒤에는 애니메이션을 멈추고, 다시 보이면 이어서 그림
+  useEffect(() => {
+    visibleRef.current = visible
+    if (visible) { syncRef.current(); return }
+    const id = window.setTimeout(() => syncRef.current(), FADE_MS)
+    return () => window.clearTimeout(id)
+  }, [visible])
 
   useEffect(() => {
     const canvas = ref.current
@@ -44,10 +58,11 @@ export default function FluidBackground() {
     }
     const sync = () => {
       cancelAnimationFrame(raf); raf = 0
-      if (!reduce && !document.hidden) raf = requestAnimationFrame(frame)
+      if (visibleRef.current && !reduce && !document.hidden) raf = requestAnimationFrame(frame)
     }
     const onResize = () => { size(); if (reduce) still() }
 
+    syncRef.current = sync
     still()
     sync()
     window.addEventListener('resize', onResize)
@@ -59,5 +74,5 @@ export default function FluidBackground() {
     }
   }, [])
 
-  return <canvas ref={ref} className={s.canvas} aria-hidden />
+  return <canvas ref={ref} className={`${s.canvas} ${visible ? '' : s.hidden}`} aria-hidden />
 }
